@@ -17,8 +17,8 @@ CMP_ON		equ	b'00010100'
 CMP_OFF		equ	b'00010111'
 
 ;pwm duty equal to 50%
-PWM_DUTY_HALF	equ	0xA0
-PWM_DUTY_FULL	equ	0xA0*2
+PWM_DUTY_HALF	equ	126
+PWM_DUTY_FULL	equ	PWM_DUTY_HALF*2
 LED_MODE_MAX	equ	5
 
 
@@ -44,6 +44,14 @@ pend2		equ	5
 	cblock	0x20
 ; bank0, 80bytes
 ;------------------------
+;*****
+;pwm
+;*****
+	tmp
+
+;*****
+;pwm
+;*****
 ;used by pwm generator
 	pwm_data
 	pwm_time1
@@ -58,6 +66,10 @@ pend2		equ	5
 ;actual pwm duty, or better, the number of repeats
 	pwm_duty1
 	pwm_duty2
+
+;*****
+;
+;*****
 
 ;led output mode (0-10)
 	led1_mode
@@ -103,6 +115,7 @@ PWM_SET macro par1, par2
 ; 6 cycles
 ;---------------------------
 PWM_TOGGLE_CONF macro par1, par2
+	bcf	pwm_tmp_data, par1
 	btfss	pwm_tmp_data, par2
 	bsf	pwm_tmp_data, par1
 	endm
@@ -112,6 +125,7 @@ PWM_TOGGLE_CONF macro par1, par2
 ; 6 cycles
 ;---------------------------
 PWM_COPY_CONF macro par1, par2
+	bcf	pwm_tmp_data, par1
 	btfsc	pwm_tmp_data, par2
 	bsf	pwm_tmp_data, par1
 	endm

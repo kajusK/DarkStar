@@ -45,14 +45,14 @@ pwm_update_1
 ;duty1 over 50
 pwm_update_2
 	movf	pwm_duty1, w
-	addlw	0xff-PWM_DUTY_FULL	;PWM_DUTY_FULL - pwm_duty
+	sublw	PWM_DUTY_FULL	;PWM_DUTY_FULL - pwm_duty
 	movwf	pwm_tmp1
 	goto	pwm_update_1
 
 ;duty2 over 50
 pwm_update_3
 	movf	pwm_duty2, w
-	addlw	0xff-PWM_DUTY_FULL	;PWM_DUTY_FULL - pwm_duty
+	sublw	PWM_DUTY_FULL	;PWM_DUTY_FULL - pwm_duty
 	movwf	pwm_tmp2
 
 ;first bits and times are ready, compute middle and end bits
@@ -85,10 +85,10 @@ pwm_update_5
 	PWM_COPY_CONF	pend2, pmiddle2
 
 	movf	pwm_tmp2, w
-	movwf	pwm_tmp_time2		;update shorter pulse time
+	movwf	pwm_tmp_time1		;update shorter pulse time
 
 	subwf	pwm_tmp1, w
-	movwf	pwm_tmp_time1		;tmp2-tmp1
+	movwf	pwm_tmp_time2		;tmp1-tmp2
 	goto	pwm_update_var		;set the permanent values and return
 
 ;both pwm times are same
@@ -111,8 +111,19 @@ pwm_update_var
 	goto	pwm_update_var_1	;pwm1 is 100% or 0%
 pwm_update_var_3
 	movf	pwm_tmp2, f
+	btfsc	status, z
 	goto	pwm_update_var_2
+
 pwm_update_var_4
+;update the times to avoid owerflow - pwm generator first do decfsz...
+	incf	pwm_tmp_time1, w
+	btfss	status, z		;check if incrementing doesn't cause buffer overflow
+	incf	pwm_tmp_time1, f
+
+	incf	pwm_tmp_time2, w
+	btfss	status, z
+	incf	pwm_tmp_time2, f
+;disable interrupts and copy data to the permanent location
 	bcf	intcon, gie		;disable interrupt
 	movf	pwm_tmp_data, w
 	movwf	pwm_data
@@ -136,19 +147,47 @@ pwm_update_var_2
 	PWM_COPY_CONF	pmiddle2, pstart2
 	PWM_COPY_CONF	pend2, pmiddle2
 	goto		pwm_update_var_4
+
+;-----------------------------------
+; Limit value in W to PWM_DUTY_FULL
+;-----------------------------------
+pwm_duty_check
+	movwf	tmp
+	sublw	PWM_DUTY_FULL		;full - new
+	btfss	status, c
+	retlw	PWM_DUTY_FULL		;new > full
+	movf	tmp, w
+	return
 ;**********************************************************************
 ; Global
 ;**********************************************************************
 ;-----------------------------------
-; Correct pwm output by voltage offset
+; Set pwm1 duty
+; duty stored in w
+; uses TMP and 1 level stack
+;-----------------------------------
+pwm_set_duty1
+	call	pwm_duty_check		;check and correct max/min duty values if needed
+	movwf	pwm_duty1
+	call	pwm_update
+	return
+;-----------------------------------
+; Set pwm1 duty
+; duty stored in w
+; uses TMP and 1 level stack
+;-----------------------------------
+pwm_set_duty2
+	call	pwm_duty_check		;check and correct max/min duty values if needed
+	movwf	pwm_duty2
+	call	pwm_update
+	return
+
+;-----------------------------------
+; Correct pwm duties by voltage offset
 ; offset in w
 ;-----------------------------------
 pwm_correct
 
-;-----------------------------------
-; Correct pwm output by voltage offset
-; offset in w
-;-----------------------------------
 
 ;-----------------------------------
 ; Enable/disable led
@@ -173,7 +212,6 @@ led_off macro r_tris, pin
 ; Set led output levels, stored in ledX_mode
 ;-----------------------------------
 led1_level
-	;Nejak pronasob aby sedelo
 
 
 led2_level

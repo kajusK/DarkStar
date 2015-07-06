@@ -84,46 +84,42 @@ int_systime
 ;one, finally set the last value
 ;
 ; Timing and output settings are determined by preset variables
-;	pwm_val1,2 contains timing of the two parts
+;	pwm_time1,2 contains timing of the two parts
 ;	pwm_data pin states in all three parts of pwm execution
 ;
 ; Times:
-;	9	int start
-;	4	set led1
-;	3	set led2
-;	2	preloop
-;	3*pwm_val1+2	loop1
 ;	3	set led1
 ;	3	set led2
 ;	2	preloop
-;	3*pwm_val2+2	loop2
+;	4*(pwm_val1-1)+3	loop1
 ;	3	set led1
 ;	3	set led2
-;	8	int end
+;	2	preloop
+;	4*(pwm_val2-1)+3	loop2
+;	3	set led1
+;	3	set led2
 ;
-; Pulse lengths (low or high part, depends on pwm_mode)
-;	average 13+3*pwm_valX
-;	shortest 6+3*pwm_valX
-;	longest	23+3*pwm_val1 + 3*pwm_val2
-;
-; Because of lowest time consumption code, 100% is not possible - 9us space will exist
+; Because of lowest time consumption code, 100% duty is not possible
+;	9us space will exist (equals 99% duty)
 int_pwm
 	bcf	intcon, t0if		;clear
 	PWM_SET pstart1, pstart2	;set leds to initial state
 
 ;wait for shorter pulse to finish
-	movf	pwm_time1, f
+	movf	pwm_time1, w
 	movwf	pwm_count
 int_pwm1
+	nop
 	decfsz	pwm_count, f
 	goto	int_pwm1
 
 	PWM_SET	pmiddle1, pmiddle2
 
 ;wait for the rest of the time for the second pulse end
-	movf	pwm_time2, f
+	movf	pwm_time2, w
 	movwf	pwm_count
 int_pwm2
+	nop
 	decfsz	pwm_count, f
 	goto	int_pwm2
 
@@ -143,6 +139,10 @@ int_end
 	retfie
 
 ;######################################################################
+;Routines...
+;######################################################################
+	include actions.asm
+;######################################################################
 ;Init
 ;######################################################################
 init
@@ -150,6 +150,7 @@ init
 ;bank 1
 	bsf	status, rp0
 	movlw	b'01100000'	;4MHz
+	movwf	osccon
 ;---------------set ports--------------
 ;bank 0
 	bcf	status, rp0
@@ -170,6 +171,7 @@ init
 	movlw	0x80
 	movwf	ansel		;only RC3 is analog input
 ;bank0
+	bcf	status, rp0
 	movlw	b'00011101'	;left justified, vdd reference,AD module on
 	movwf	adcon0
 ;------------comparator----------------
@@ -205,8 +207,8 @@ init
 
 ;wait for button to be released - pic turned on by pressing the button
 bt_start_rel
-	btfss	bt1
-	goto	bt_start_rel
+;	btfss	bt1
+;	goto	bt_start_rel
 
 ;restore previous state
 ;read data from eeprom, 0xAA, led1, led2, mode
@@ -218,7 +220,6 @@ bt_start_rel
 ;######################################################################
 ;main
 ;######################################################################
-	include actions.asm
 ;before sleep
 ;	disable comparators
 		;movlw	CMP_OFF
@@ -232,6 +233,11 @@ bt_start_rel
 
 ;generates pwm and run tasks
 	;pwm on
+	movlw	0
+	call	pwm_set_duty1
+	movlw	126
+	call	pwm_set_duty2
+
 loop
 
 	goto	loop
