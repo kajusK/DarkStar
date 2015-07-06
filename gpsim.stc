@@ -1,0 +1,5 @@
+load svitilna.cod
+
+module library libgpsim_modules
+
+frequency 8000000
