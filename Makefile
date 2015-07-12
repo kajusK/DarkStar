@@ -1,7 +1,7 @@
 NAME=headlamp
 MCU=PIC16F616
 
-${NAME}.hex: *.asm
+${NAME}.hex: *.asm *.inc
 	gpasm -i ${NAME}.asm
 
 burn:

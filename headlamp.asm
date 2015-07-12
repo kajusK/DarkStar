@@ -1,6 +1,6 @@
 ;**********************************************************************
 ;Led headlamp
-;PIC 16F616
+;PIC 16F684
 ;internal 4MHz
 ;------------------------------
 ; Jakub Kaderka
@@ -19,6 +19,7 @@
 ;                         -------------------------
 ;------------------------------
 ; BT1 wakes pic from sleep
+; Using watchdog
 ;**********************************************************************
 	LIST P=16F684, R=DEC
 	include p16f684.inc
@@ -62,14 +63,17 @@ interrupt
 	movwf	intcon
 	goto	int_end
 
-;wake up from sleep, just return
+;wake up from sleep when gie stayed enabled, just return
 int_raif
 	movf	porta, f	;update latches
 	bcf	intcon, raif
 	goto	int_end
 
-;simple timer for system tasks
+;-----------------------------
+;timers for system tasks
+;-----------------------------
 int_systime
+	incf	sys_timer, f	;general timer
 	goto	int_pwm
 
 ;-----------------------------
@@ -79,28 +83,21 @@ int_systime
 ;	duty <= 50% : generate high part of pulse
 ;	duty >= 50% : generate low part of pulse
 ;
-;first, set initial pwm pins values, wait for the length of the shorter
-;pulse, then set new pin values and wait for the rest of the time of the longer
-;one, finally set the last value
+; first, set initial pwm pins values, wait for the length of the shorter
+; pulse, then set new pin values and wait for the rest of the time of the longer
+; one, finally set the last value
 ;
 ; Timing and output settings are determined by preset variables
 ;	pwm_time1,2 contains timing of the two parts
 ;	pwm_data pin states in all three parts of pwm execution
 ;
-; Times:
-;	3	set led1
-;	3	set led2
-;	2	preloop
-;	4*(pwm_val1-1)+3	loop1
-;	3	set led1
-;	3	set led2
-;	2	preloop
-;	4*(pwm_val2-1)+3	loop2
-;	3	set led1
-;	3	set led2
+; Pulse time (0 < pwm_timeX < 256):
+;	firtst 8+4*pwm_time1
+;	second 19+4*pwm_time1+4*pwm_time2
 ;
 ; Because of lowest time consumption code, 100% duty is not possible
 ;	9us space will exist (equals 99% duty)
+;-----------------------------
 int_pwm
 	bcf	intcon, t0if		;clear
 	PWM_SET pstart1, pstart2	;set leds to initial state
@@ -139,19 +136,24 @@ int_end
 	retfie
 
 ;######################################################################
-;Routines...
+;all the important parts :)
 ;######################################################################
-	include actions.asm
+	include pwm.asm
+	include led.asm
+
 ;######################################################################
 ;Init
 ;######################################################################
 init
+;**************************************
+; peripherals
+;**************************************
 ;---------------oscillator-------------
 ;bank 1
 	bsf	status, rp0
 	movlw	b'01100000'	;4MHz
 	movwf	osccon
-;---------------set ports--------------
+;----------------ports-----------------
 ;bank 0
 	bcf	status, rp0
 ;clear ports
@@ -186,19 +188,33 @@ init
 ;bank0
 	bcf	status, rp0
 	clrf	tmr0
+;watchdog
+	clrwdt
+	bsf	wdtcon, swdten	;enable
 ;--------------interrupt---------------
 	movlw	b'01100000'	;tmr0 interrupt enabled, global disabled for now
 	movwf	intcon
 ;bank1
 	bsf	status, rp0
 	movlw	0x08
-	movlw	ioca		;interrupt on bt1 change
+	movlw	ioca		;unmask interrupt on bt1 change
 ;bank0
 	bcf	status, rp0
 
 
+;**************************************
+; variables
+;**************************************
+	movlw	ADC_LOW_RETRIES
+	movwf	adc_low_count
+
+	;update ADC value
 
 
+
+
+
+;IN CASE OF CLEAR REBOOT
 ;turn on the led
 	bcf	ledv
 	bsf	pwm1
@@ -220,12 +236,6 @@ bt_start_rel
 ;######################################################################
 ;main
 ;######################################################################
-;before sleep
-;	disable comparators
-		;movlw	CMP_OFF
-		;movwf	cmcon0
-;	AD is disabled automatically
-;
 
 
 ;tasks
@@ -233,13 +243,62 @@ bt_start_rel
 
 ;generates pwm and run tasks
 	;pwm on
-	movlw	0
-	call	pwm_set_duty1
-	movlw	126
-	call	pwm_set_duty2
+	;movlw	0
+	;call	pwm_set_duty1
+	;movlw	126
+	;call	pwm_set_duty2
 
 loop
-
+	clrwdt
 	goto	loop
+;-----------------------------------
+; Sleep - virtual poweroff
+;
+; disable everything you can and go to sleep
+; return from sleep can be done by pressing bt1
+;-----------------------------------
+poweroff
+	led_off	led1
+	led_off led2
+	bsf	ledv		;turn leds off
+
+	bcf	pwm1
+	bcf	pwm2
+
+	clrf	tmr0
+	bcf	intcon, t0if	;to be sure there's no pending interrupt
+
+	movlw	CMP_OFF
+	movwf	cmcon0		;disable comparator
+
+	movf	porta, f	;update latches on porta
+	bcf	intcon, raif
+	bsf	intcon, raie	;enable interrupt on porta to wake up from sleep
+	bcf	intcon, gie	;will cause wake up from sleep without calling interrupt
+
+	bcf	wdtcon, swdten	;disable watchdog
+	clrwdt
+
+	sleep			;sleep my beauty, you are not needed for now...
+;hey, you woke me up, time to start working again
+	bsf	wdtcon, swdten	;reenable watchdog
+
+	bcf	intcon, raie
+	bsf	intcon, gie	;reenable timer interrupt
+
+	movlw	CMP_ON
+	movwf	cmcon0		;reenable comparators
+
+	bcf	ledv
+
+	movf	led1_mode,f
+	btfsc	status, z
+	led_on	led1
+
+	movf	led2_mode, f
+	btfsc	status, z
+	led_on	led2		;reenable leds if were enabled before
+
+	return
 ;----------------------------------------------------------------------
 	end

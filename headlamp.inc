@@ -18,8 +18,25 @@ CMP_OFF		equ	b'00010111'
 
 ;pwm duty equal to 50%
 PWM_DUTY_HALF	equ	126
+;full pwm duty
 PWM_DUTY_FULL	equ	PWM_DUTY_HALF*2
+
+;led modes
 LED_MODE_MAX	equ	5
+PWM_LED_STEP	equ	PWM_DUTY_FULL/LED_MODE_MAX
+
+;ADC
+; Cut off adc, when this threshold is exceeded, the devices moves to sleep as
+; the battery is almost dead
+;MODIFY - BASED ON PARTS YOU USED
+; treshold_adc = 255*sense_diode_fwd/(treshold_voltage - supply_diode_fwd)
+; = 255*1,85/(3-0,37)
+ADC_TRESHOLD	equ	179
+;at this level, set led output to minimum
+ADC_SOFT_TRSH	equ	160
+
+;low voltage has to be measured more times before shutting the device off
+ADC_LOW_RETRIES	equ	10
 
 
 ;pwm_data
@@ -45,9 +62,11 @@ pend2		equ	5
 ; bank0, 80bytes
 ;------------------------
 ;*****
-;pwm
+;general
 ;*****
 	tmp
+
+	sys_timer	;system timer, increments every 1024 us
 
 ;*****
 ;pwm
@@ -57,7 +76,7 @@ pend2		equ	5
 	pwm_time1
 	pwm_time2
 	pwm_count
-;tmp values for computation of the pwm timing values
+;tmp values for calculation of the pwm generator variables
 	pwm_tmp_data	;-|
 	pwm_tmp_time1	;-|- copied into non tmp values after computation
 	pwm_tmp_time2	;-|
@@ -68,10 +87,17 @@ pend2		equ	5
 	pwm_duty2
 
 ;*****
-;
+;ADC
 ;*****
+;last voltage
+	adc_result
+;adc conversions left before shutdown
+	adc_low_count
+;multiplication, division...
+	numberl
+	numberh
 
-;led output mode (0-10)
+;led output power (0-5, 0 is off)
 	led1_mode
 	led2_mode
 ;------------------------
