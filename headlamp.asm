@@ -1,6 +1,6 @@
 ;**********************************************************************
 ;Led headlamp
-;PIC 16F684
+;PIC 16F616
 ;internal 4MHz
 ;------------------------------
 ; Jakub Kaderka
@@ -19,13 +19,12 @@
 ;                         -------------------------
 ;------------------------------
 ; BT1 wakes pic from sleep
-; Using watchdog
 ;**********************************************************************
-	LIST P=16F684, R=DEC
-	include p16f684.inc
+	LIST P=16F616, R=DEC
+	include p16f616.inc
 	errorlevel -302
 
-	__CONFIG _CP_OFF & _CPD_OFF & _BOREN_ON & _MCLRE_OFF & _PWRTE_ON & _WDT_OFF & _INTRC_OSC_NOCLKOUT & _FCMEN_OFF & _IESO_OFF
+	__CONFIG _CP_OFF & _BOREN_ON & _MCLRE_OFF & _PWRTE_ON & _WDT_OFF & _INTRC_OSC_NOCLKOUT & _IOSCFS_4MHZ
 
 	include headlamp.inc
 
@@ -71,9 +70,26 @@ int_raif
 
 ;-----------------------------
 ;timers for system tasks
+; sets run flags after specified period
 ;-----------------------------
 int_systime
-	incf	sys_timer, f	;general timer
+;adc
+	incf	adc_period_timer, f
+	movlw	ADC_PERIOD
+	subwf	adc_period_timer, w	;compare actual value with perid constatn
+	btfsc	status, z
+	bsf	task_flags, adc_run	;time to run adc task
+	btfsc	status, z		;better than goto - shorter and always same lenght
+	clrf	adc_period_timer	;clear timer
+
+	incf	key_period_timer, f
+	movlw	KEY_PERIOD
+	subwf	key_period_timer, w
+	btfsc	status, z
+	bsf	task_flags, key_run	;time to run key task
+	btfsc	status, z		;better than goto - shorter and always same lenght
+	clrf	key_period_timer	;clear timer
+
 	goto	int_pwm
 
 ;-----------------------------
@@ -139,7 +155,9 @@ int_end
 ;all the important parts :)
 ;######################################################################
 	include pwm.asm
+	include ad.asm
 	include led.asm
+;include key.asm
 
 ;######################################################################
 ;Init
@@ -148,14 +166,7 @@ init
 ;**************************************
 ; peripherals
 ;**************************************
-;---------------oscillator-------------
-;bank 1
-	bsf	status, rp0
-	movlw	b'01100000'	;4MHz
-	movwf	osccon
-;----------------ports-----------------
 ;bank 0
-	bcf	status, rp0
 ;clear ports
 	movlw	0xff
 	movwf	porta
@@ -169,16 +180,22 @@ init
 	movwf	trisc
 
 	clrf	wpua		;disable pull ups
+	movlw	b'10110011'
+	movwf	ansel		;only RC3 and comparators out are inputs
 ;----------------AD--------------------
-	movlw	0x80
-	movwf	ansel		;only RC3 is analog input
+	movlw	b'01010000'
+	movwf	adcon1		;set ADC period
 ;bank0
 	bcf	status, rp0
 	movlw	b'00011101'	;left justified, vdd reference,AD module on
 	movwf	adcon0
 ;------------comparator----------------
-	movlw	CMP_ON
-	movwf	cmcon0		;c1 inverted, two independent comparators
+	movlw	b'10110000'
+	movwf	cm1con0		;output inverted
+	movlw	b'10100001'
+	movwf	cm2con0
+	movlw	0x02
+	movwf	cm2con1		;asynchronous outputs, timer1 ignored
 ;---------------timers-----------------
 ;tmr0
 ;bank1
@@ -188,9 +205,6 @@ init
 ;bank0
 	bcf	status, rp0
 	clrf	tmr0
-;watchdog
-	clrwdt
-	bsf	wdtcon, swdten	;enable
 ;--------------interrupt---------------
 	movlw	b'01100000'	;tmr0 interrupt enabled, global disabled for now
 	movwf	intcon
@@ -201,16 +215,32 @@ init
 ;bank0
 	bcf	status, rp0
 
-
 ;**************************************
 ; variables
 ;**************************************
+	movlw	0xff
+	movwf	pwm_data
+	clrf	pwm_time1
+	clrf	pwm_time2
+
 	movlw	ADC_LOW_RETRIES
 	movwf	adc_low_count
 
-	;update ADC value
+	clrf	key_period_timer
+	clrf	adc_period_timer
+	clrf	task_flags
 
+;**************************************
+; Tasks init, battery check...
+;**************************************
+	;call	adc_voltage_check
+	;btfss	status, c
+	;call	low_battery
 
+	;update ADC value adc_result by running measurement
+	;set led intensity
+
+;detect type of restart, if from wdt, do something
 
 
 
@@ -243,13 +273,30 @@ bt_start_rel
 
 ;generates pwm and run tasks
 	;pwm on
-	;movlw	0
-	;call	pwm_set_duty1
-	;movlw	126
-	;call	pwm_set_duty2
+	movlw	255
+	call	pwm1_set
+	movlw	100
+	call	pwm2_set
+	call	pwm_update
+
+	;movlw	3
+	;call	led2_set
 
 loop
-	clrwdt
+	goto	loop
+
+;Uses flags set in interrupt routine, no need to take care of race conditions
+;interrupt only sets the value, readed and unset are here
+	btfsc	task_flags, key_run
+	;call	key_task
+	btfsc	task_flags, key_run	;shorter than goto...
+	bcf	task_flags, key_run	;clear flag
+
+	btfsc	task_flags, adc_run
+	call	adc_task
+	btfsc	task_flags, adc_run	;shorter than goto...
+	bcf	task_flags, adc_run	;clear flag
+
 	goto	loop
 ;-----------------------------------
 ; Sleep - virtual poweroff
@@ -258,6 +305,12 @@ loop
 ; return from sleep can be done by pressing bt1
 ;-----------------------------------
 poweroff
+	;TODO remove
+	bsf	ledv
+	goto	poweroff
+
+	return
+
 	led_off	led1
 	led_off led2
 	bsf	ledv		;turn leds off
@@ -268,34 +321,30 @@ poweroff
 	clrf	tmr0
 	bcf	intcon, t0if	;to be sure there's no pending interrupt
 
-	movlw	CMP_OFF
-	movwf	cmcon0		;disable comparator
+	bcf	cm1con0, c1on
+	bcf	cm2con0, c2on	;disable comparators
 
 	movf	porta, f	;update latches on porta
 	bcf	intcon, raif
 	bsf	intcon, raie	;enable interrupt on porta to wake up from sleep
 	bcf	intcon, gie	;will cause wake up from sleep without calling interrupt
 
-	bcf	wdtcon, swdten	;disable watchdog
-	clrwdt
-
 	sleep			;sleep my beauty, you are not needed for now...
 ;hey, you woke me up, time to start working again
-	bsf	wdtcon, swdten	;reenable watchdog
 
 	bcf	intcon, raie
 	bsf	intcon, gie	;reenable timer interrupt
 
-	movlw	CMP_ON
-	movwf	cmcon0		;reenable comparators
+	bsf	cm1con0, c1on
+	bsf	cm2con0, c2on	;reenable comparators
 
 	bcf	ledv
 
-	movf	led1_mode,f
+	movf	led1_intensity,f
 	btfsc	status, z
 	led_on	led1
 
-	movf	led2_mode, f
+	movf	led2_intensity, f
 	btfsc	status, z
 	led_on	led2		;reenable leds if were enabled before
 

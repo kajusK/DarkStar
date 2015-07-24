@@ -12,10 +12,6 @@
 ;definitions
 ;**********************************************************************
 ;---------------constants---------------------
-;cmcon0 - comparators
-CMP_ON		equ	b'00010100'
-CMP_OFF		equ	b'00010111'
-
 ;pwm duty equal to 50%
 PWM_DUTY_HALF	equ	126
 ;full pwm duty
@@ -30,14 +26,17 @@ PWM_LED_STEP	equ	PWM_DUTY_FULL/LED_MODE_MAX
 ; the battery is almost dead
 ;MODIFY - BASED ON PARTS YOU USED
 ; treshold_adc = 255*sense_diode_fwd/(treshold_voltage - supply_diode_fwd)
-; = 255*1,85/(3-0,37)
-ADC_TRESHOLD	equ	179
+; = 255*1,71/(3-0,23) - using the measured values
+ADC_TRESHOLD	equ	158
 ;at this level, set led output to minimum
-ADC_SOFT_TRSH	equ	160
+ADC_SOFT_TRSH	equ	120
 
 ;low voltage has to be measured more times before shutting the device off
-ADC_LOW_RETRIES	equ	10
+ADC_LOW_RETRIES	equ	5
 
+;timing of system tasks - increments of 1024 us
+ADC_PERIOD	equ	200		;5 Hz
+KEY_PERIOD	equ	10		;every 10ms
 
 ;pwm_data
 pstart1		equ	0
@@ -46,6 +45,10 @@ pmiddle1	equ	2
 pmiddle2	equ	3
 pend1		equ	4
 pend2		equ	5
+
+;task_flags
+adc_run		equ	0
+key_run		equ	1
 ;----------------------pins-------------------
 #define	pwm1	porta, 5
 #define pwm2	portc, 2
@@ -66,8 +69,15 @@ pend2		equ	5
 ;*****
 	tmp
 
-	sys_timer	;system timer, increments every 1024 us
+;system timer, increments every 1024 us
+	adc_period_timer
+	key_period_timer
+;tasks run etc flags
+	task_flags
 
+;led output power (0-5, 0 is off)
+	led1_intensity
+	led2_intensity
 ;*****
 ;pwm
 ;*****
@@ -96,10 +106,6 @@ pend2		equ	5
 ;multiplication, division...
 	numberl
 	numberh
-
-;led output power (0-5, 0 is off)
-	led1_mode
-	led2_mode
 ;------------------------
 	endc
 

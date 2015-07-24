@@ -1,6 +1,6 @@
 ;**********************************************************************
 ;Led headlamp
-;PIC 16F684
+;PIC 16F616
 ;internal 4MHz
 ;------------------------------
 ; Jakub Kaderka
@@ -77,15 +77,13 @@ adc_convert_1
 	return
 
 ;------------------------------
-; ADC after power up check
+; ADC voltage check
 ;
-; Check the current voltage level, if too low, go to sleep
+; Check the current voltage level, if too low, set status, c to zero
 ;------------------------------
-adc_power_up_check
+adc_voltage_check
 	call	adc_convert		;result in W
 	sublw	ADC_TRESHOLD		;treshold - adc_result
-	btfss	status, c
-	goto	placeholder		;check if return or goto....
 	return
 
 ;------------------------------
@@ -93,6 +91,8 @@ adc_power_up_check
 ;
 ; Check the current voltage level, if too low, turn the device off,
 ; if not, calculate and apply pwm duty correction
+;
+; 2 stack levels and tmp
 ;------------------------------
 adc_task
 	call	adc_convert		;result in W
@@ -101,19 +101,32 @@ adc_task
 	goto	adc_low			;voltage low
 
 	movlw	ADC_LOW_RETRIES
-	movwf	adc_low_count		;set adc low voltage before shutdown counter
-	goto	adc_calculate
+	movwf	adc_low_count		;reset adc low counter
 
+;apply pwm output correction
+adc_task_update
+	movf	led1_intensity, w
+	call	adc_pwm_calculate	;get the new pwm
+	call	pwm1_set		;and set it
+
+	movf	led2_intensity, w
+	call	adc_pwm_calculate
+	call	pwm2_set
+
+	call	pwm_update		;finally, apply the new values
+	return
+
+;voltage below treshold
 adc_low
-	decfsz	adc_low_count		;low voltage event must repeat few times before shutdown
-	goto	adc_calculate
+	decfsz	adc_low_count, f	;low voltage event must repeat few times before shutdown
+	goto	adc_task_update		;not enough repeated low voltage measurements, continue
 	;ugh, battery is low, shutdown
 
 	movlw	ADC_LOW_RETRIES
 	movwf	adc_low_count		;reset adc low counter
 
-	goto	placeholder
-
+	call	poweroff		;voltage too low
+	return
 ;-----------------------------
 ; calculate pwm value from intensity and current adc
 ; intensity and result in W
@@ -133,9 +146,9 @@ adc_pwm_calculate
 	call	divide			;divide result by 2^2 = 4
 
 	movf	numberh, f
-	movlw	0x7f
+	movlw	0xff
 	btfss	status, z
-	movwf	numberl			;result was bigger than 255 - error, set pwm to half to fix it
+	movwf	numberl			;result was bigger than 255 - set to 100% duty
 
 	movf	numberl, w
 	return

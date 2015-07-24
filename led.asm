@@ -1,6 +1,6 @@
 ;**********************************************************************
 ;Led headlamp
-;PIC 16F684
+;PIC 16F616
 ;internal 4MHz
 ;------------------------------
 ; Jakub Kaderka
@@ -8,8 +8,6 @@
 ; 2015
 ;------------------------------
 ; ad.asm
-;------------------------------
-;
 ;**********************************************************************
 ;-----------------------------------
 ; Enable/disable led
@@ -29,11 +27,12 @@ led_off macro r_tris, pin
 	bsf	r_tris, pin
 	bcf	status, rp0
 	endm
+
 ;-----------------------------------
 ; Limit W to led mode max
 ; uses tmp
 ;-----------------------------------
-led_mode_limit
+led_intensity_limit
 	movwf	tmp
 	sublw	LED_MODE_MAX		;max - new
 	btfss	status, c
@@ -42,28 +41,47 @@ led_mode_limit
 	return
 
 ;-----------------------------------
-; Set led output power
+; Set led1 output intensity (0-5)
 ;
-; Convert led level from W to pwm_duty
-; Call pwm_correct to apply voltage correction
-; and update pwm generator
-
+; Intensity in W
+;
 ; uses tmp, 2 level stack
 ;-----------------------------------
-set_led1_mode
-	call	led_mode_limit
-	;0 - turn off, else *step
+led1_set
+	call	led_intensity_limit
+	movwf	led1_intensity		;save new intensity
 
-	return
+	led_off	led1
+	movf	led1_intensity, w
+	btfss	status, z
+	led_on	led1
 
-set_led2_mode
-	call	led_mode_limit
+	call	adc_pwm_calculate
+	call	pwm1_set
+	call	pwm_update
+	led_on	led1
+
 	return
 
 ;-----------------------------------
-; Enable/disable led
+; Set led2 output intensity (0-5)
 ;
-; set port as input/output which effectively
-; disable/enable comparator output
-; and therefore the led itself
+; Intensity in W
+;
+; uses tmp, 2 level stack
 ;-----------------------------------
+led2_set
+	call	led_intensity_limit
+	movwf	led2_intensity		;save new intensity
+
+	led_off	led2
+	movf	led2_intensity, w
+	btfss	status, z
+	led_on	led2
+
+	call	adc_pwm_calculate
+	call	pwm2_set
+	call	pwm_update
+	led_on	led2
+
+	return
