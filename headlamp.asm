@@ -57,7 +57,7 @@ interrupt
 	btfsc	intcon, raif
 	goto	int_raif
 
-;ERROR, some other interrupt enabled, fix and return:
+;ERROR, some other interrupts enabled, fix and return:
 	movlw	b'01100000'
 	movwf	intcon
 	goto	int_end
@@ -71,25 +71,30 @@ int_raif
 ;-----------------------------
 ;timers for system tasks
 ; sets run flags after specified period
+;
+;to keep pwm timing acurate, this part should always take same time
 ;-----------------------------
 int_systime
-;adc
-	incf	adc_period_timer, f
+	decfsz	adc_period_timer, f
+	goto	int_systime_ad_wait
 	movlw	ADC_PERIOD
-	subwf	adc_period_timer, w	;compare actual value with perid constatn
-	btfsc	status, z
+	movwf	adc_period_timer
 	bsf	task_flags, adc_run	;time to run adc task
-	btfsc	status, z		;better than goto - shorter and always same lenght
-	clrf	adc_period_timer	;clear timer
 
-	incf	key_period_timer, f
+int_systime_key
+	decfsz	key_period_timer, f
+	goto	int_systime_key_wait
 	movlw	KEY_PERIOD
-	subwf	key_period_timer, w
-	btfsc	status, z
+	movwf	key_period_timer
 	bsf	task_flags, key_run	;time to run key task
-	btfsc	status, z		;better than goto - shorter and always same lenght
-	clrf	key_period_timer	;clear timer
 
+	goto	int_pwm
+
+int_systime_ad_wait
+	goto	int_systime_key
+
+int_systime_key_wait
+	goto	$+1
 	goto	int_pwm
 
 ;-----------------------------
@@ -154,10 +159,11 @@ int_end
 ;######################################################################
 ;all the important parts :)
 ;######################################################################
+	include led.asm
 	include pwm.asm
 	include ad.asm
-	include led.asm
-;include key.asm
+	include key.asm
+	include actions.asm
 
 ;######################################################################
 ;Init
@@ -181,7 +187,7 @@ init
 
 	clrf	wpua		;disable pull ups
 	movlw	b'10110011'
-	movwf	ansel		;only RC3 and comparators out are inputs
+	movwf	ansel		;only RC3 and comparators out are analog inputs
 ;----------------AD--------------------
 	movlw	b'01010000'
 	movwf	adcon1		;set ADC period
@@ -215,139 +221,70 @@ init
 ;bank0
 	bcf	status, rp0
 
+;-------------status_led---------------
+	bcf	ledv
+	bsf	pwm1		;turn led on
 ;**************************************
 ; variables
 ;**************************************
-	movlw	0xff
-	movwf	pwm_data
-	clrf	pwm_time1
-	clrf	pwm_time2
+	clrf	led1_intensity
+	clrf	led2_intensity
+
+	clrf	pwm_duty1
+	clrf	pwm_duty2
+	call	pwm_update		;init pwm values
 
 	movlw	ADC_LOW_RETRIES
 	movwf	adc_low_count
 
-	clrf	key_period_timer
-	clrf	adc_period_timer
+	movlw	ADC_PERIOD
+	movwf	adc_period_timer
+	movlw	KEY_PERIOD
+	movwf	key_period_timer
+
 	clrf	task_flags
 
+	clrf	buttons
+	clrf	mode
+
 ;**************************************
-; Tasks init, battery check...
+; battery check...
 ;**************************************
-	;call	adc_voltage_check
-	;btfss	status, c
-	;call	low_battery
-
-	;update ADC value adc_result by running measurement
-	;set led intensity
-
-;detect type of restart, if from wdt, do something
-
-
-
-;IN CASE OF CLEAR REBOOT
-;turn on the led
-	bcf	ledv
-	bsf	pwm1
-;measure battery voltage
-;if low, wait for second, turn off the led and go to sleep
-
-;wait for button to be released - pic turned on by pressing the button
-bt_start_rel
-;	btfss	bt1
-;	goto	bt_start_rel
-
-;restore previous state
-;read data from eeprom, 0xAA, led1, led2, mode
-;no data in eprom, set default mode
-
+;init adc result and check if voltage is high enough
+	call	adc_voltage_check
+	btfss	status, c
+	call	low_voltage
 
 ;enable interrupt -> pwm
 	bsf	intcon, gie
+
+;finally, go to sleep, wait for button press to wake up
+	call	power_off
 ;######################################################################
-;main
+;main loop
+;
+; Runing two tasks:
+;	adc task reads voltage and updates pwm duty to keep output stable
+;		regardles of input voltage
+;
+;	key task reads key presses and runs associated commands
 ;######################################################################
-
-
-;tasks
-;monitor battery voltage and adjust the constant
-
-;generates pwm and run tasks
-	;pwm on
-	movlw	255
-	call	pwm1_set
-	movlw	100
-	call	pwm2_set
-	call	pwm_update
-
-	;movlw	3
-	;call	led2_set
-
-loop
-	goto	loop
-
+main_loop
 ;Uses flags set in interrupt routine, no need to take care of race conditions
-;interrupt only sets the value, readed and unset are here
+;interrupt only sets the value, readed and unset is here
+;timing is also not critical +- few ms means nothing
+;key task
 	btfsc	task_flags, key_run
-	;call	key_task
+	call	key_task
 	btfsc	task_flags, key_run	;shorter than goto...
 	bcf	task_flags, key_run	;clear flag
 
-	btfsc	task_flags, adc_run
-	call	adc_task
-	btfsc	task_flags, adc_run	;shorter than goto...
-	bcf	task_flags, adc_run	;clear flag
+;adc task
+;	btfsc	task_flags, adc_run
+;	call	adc_task
+;	btfsc	task_flags, adc_run	;shorter than goto...
+;	bcf	task_flags, adc_run	;clear flag
 
-	goto	loop
-;-----------------------------------
-; Sleep - virtual poweroff
-;
-; disable everything you can and go to sleep
-; return from sleep can be done by pressing bt1
-;-----------------------------------
-poweroff
-	;TODO remove
-	bsf	ledv
-	goto	poweroff
-
-	return
-
-	led_off	led1
-	led_off led2
-	bsf	ledv		;turn leds off
-
-	bcf	pwm1
-	bcf	pwm2
-
-	clrf	tmr0
-	bcf	intcon, t0if	;to be sure there's no pending interrupt
-
-	bcf	cm1con0, c1on
-	bcf	cm2con0, c2on	;disable comparators
-
-	movf	porta, f	;update latches on porta
-	bcf	intcon, raif
-	bsf	intcon, raie	;enable interrupt on porta to wake up from sleep
-	bcf	intcon, gie	;will cause wake up from sleep without calling interrupt
-
-	sleep			;sleep my beauty, you are not needed for now...
-;hey, you woke me up, time to start working again
-
-	bcf	intcon, raie
-	bsf	intcon, gie	;reenable timer interrupt
-
-	bsf	cm1con0, c1on
-	bsf	cm2con0, c2on	;reenable comparators
-
-	bcf	ledv
-
-	movf	led1_intensity,f
-	btfsc	status, z
-	led_on	led1
-
-	movf	led2_intensity, f
-	btfsc	status, z
-	led_on	led2		;reenable leds if were enabled before
-
-	return
+	goto	main_loop
 ;----------------------------------------------------------------------
 	end

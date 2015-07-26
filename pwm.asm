@@ -32,6 +32,25 @@
 ; task measures voltage few times a second and calculates necessary
 ; correction to pwm duty to keep the voltage stable.
 ;**********************************************************************
+;---------------------------
+; set pwm_tmp_data, par1 to 1 if pwm_tmp_data, par2 is 0
+; 6 cycles
+;---------------------------
+PWM_TOGGLE_CONF macro par1, par2
+	bcf	pwm_tmp_data, par1
+	btfss	pwm_tmp_data, par2
+	bsf	pwm_tmp_data, par1
+	endm
+
+;---------------------------
+; set pwm_tmp_data, par1 to pwm_tmp_data, par2
+; 6 cycles
+;---------------------------
+PWM_COPY_CONF macro par1, par2
+	bcf	pwm_tmp_data, par1
+	btfsc	pwm_tmp_data, par2
+	bsf	pwm_tmp_data, par1
+	endm
 
 ;-----------------------------------
 ; Update pwm generator duties

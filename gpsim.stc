@@ -1,8 +1,5 @@
-load headlamp.cod
+load simulation.cod
 
 module library libgpsim_modules
 
 frequency 4000000
-
-scope.ch0="portc2"
-scope.ch1="porta5"

@@ -41,47 +41,29 @@ led_intensity_limit
 	return
 
 ;-----------------------------------
-; Set led1 output intensity (0-5)
+; Set led output intensity (0-5)
 ;
 ; Intensity in W
 ;
 ; uses tmp, 2 level stack
 ;-----------------------------------
+led_set	MACRO r_intensity, led_p, led_n, f_pwm_set
+	call	led_intensity_limit
+	movwf	r_intensity		;save new intensity
+
+	led_off	led_p, led_n
+	movf	r_intensity, w
+	btfss	status, z
+	led_on	led_p, led_n
+
+	call	adc_pwm_calculate
+	call	f_pwm_set
+	call	pwm_update
+
+	return
+	ENDM
+
 led1_set
-	call	led_intensity_limit
-	movwf	led1_intensity		;save new intensity
-
-	led_off	led1
-	movf	led1_intensity, w
-	btfss	status, z
-	led_on	led1
-
-	call	adc_pwm_calculate
-	call	pwm1_set
-	call	pwm_update
-	led_on	led1
-
-	return
-
-;-----------------------------------
-; Set led2 output intensity (0-5)
-;
-; Intensity in W
-;
-; uses tmp, 2 level stack
-;-----------------------------------
+	led_set led1_intensity, led1, pwm1_set
 led2_set
-	call	led_intensity_limit
-	movwf	led2_intensity		;save new intensity
-
-	led_off	led2
-	movf	led2_intensity, w
-	btfss	status, z
-	led_on	led2
-
-	call	adc_pwm_calculate
-	call	pwm2_set
-	call	pwm_update
-	led_on	led2
-
-	return
+	led_set led2_intensity, led2, pwm2_set
