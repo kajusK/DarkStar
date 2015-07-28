@@ -95,7 +95,6 @@ leds_off
 ; return from sleep can be done by pressing bt1 for time of long press
 ;-----------------------------------
 power_off
-	return
 	led_off	led1
 	led_off led2		;turn leds off
 
@@ -139,12 +138,13 @@ power_off_sleep
 	bsf	cm1con0, c1on
 	bsf	cm2con0, c2on	;reenable comparators
 
+;restore led states
 	movf	led1_intensity,f
-	btfsc	status, z
+	btfss	status, z
 	led_on	led1
 
 	movf	led2_intensity, f
-	btfsc	status, z
+	btfss	status, z
 	led_on	led2		;reenable leds if were enabled before
 
 	return

@@ -212,12 +212,12 @@ init
 	bcf	status, rp0
 	clrf	tmr0
 ;--------------interrupt---------------
-	movlw	b'01100000'	;tmr0 interrupt enabled, global disabled for now
+	movlw	b'00100000'	;tmr0 interrupt enabled, global disabled for now
 	movwf	intcon
 ;bank1
 	bsf	status, rp0
 	movlw	0x08
-	movlw	ioca		;unmask interrupt on bt1 change
+	movwf	ioca		;unmask interrupt on bt1 change
 ;bank0
 	bcf	status, rp0
 
@@ -250,10 +250,9 @@ init
 ;**************************************
 ; battery check...
 ;**************************************
-;init adc result and check if voltage is high enough
+;init adc result, checking if voltage is high enough not neccesary, device
+; will turn off itself in few us anyway
 	call	adc_voltage_check
-	btfss	status, c
-	call	low_voltage
 
 ;enable interrupt -> pwm
 	bsf	intcon, gie
@@ -274,16 +273,16 @@ main_loop
 ;interrupt only sets the value, readed and unset is here
 ;timing is also not critical +- few ms means nothing
 ;key task
-	btfsc	task_flags, key_run
+	btfss	task_flags, key_run
+	goto	$+3
 	call	key_task
-	btfsc	task_flags, key_run	;shorter than goto...
 	bcf	task_flags, key_run	;clear flag
 
 ;adc task
-;	btfsc	task_flags, adc_run
-;	call	adc_task
-;	btfsc	task_flags, adc_run	;shorter than goto...
-;	bcf	task_flags, adc_run	;clear flag
+	btfss	task_flags, adc_run
+	goto	$+3
+	call	adc_task
+	bcf	task_flags, adc_run	;clear flag
 
 	goto	main_loop
 ;----------------------------------------------------------------------

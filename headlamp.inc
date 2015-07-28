@@ -139,7 +139,10 @@ bt2_completed	equ	7
 ;button timers
 	bt1_timer
 	bt2_timer
-	key_powerup_cnt_1
+	on_counter_1
+	on_counter_2
+	on_counter_3
+
 ;------------------------
 	endc
 

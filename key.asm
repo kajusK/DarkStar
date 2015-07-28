@@ -166,29 +166,28 @@ key_task
 ; return status, c = 0 if too short
 ;-----------------------------------
 key_powerup
+;wait for about 2 sec
+	movlw	10
+	movwf	on_counter_1	;number of x100ms length
+	movlw	212
+	movwf	on_counter_2
+	movlw	155
+	movwf	on_counter_3
+
+	bcf	status, c
+	btfsc	bt1
+	return			;button released after too short time, exit
+
+	decfsz	on_counter_3, f
+	goto	$-1		;3*c3 - 1
+	decfsz	on_counter_2, f
+	goto	$-8		;(3*255-1+8)*c2-1 =
+	decfsz	on_counter_1, f
+	goto	$-12
+
+	;TODO add counter to avoid lock during key malofunction
+;wait for key to be released
+	btfss	bt1
+	goto	$-1		;wait for key to be released
 	bsf	status, c
-	return
-	;TODO
-;	movlw	0xff
-;	movwf	on_counter_1
-;	movlw	0xff
-;	movwf	on_counter_2
-;	movlw	0xff
-;	movwf	on_counter_3
-;
-;	decfsz	on_counter_3, f
-;	goto	$-1
-;	decfsz	on_counter_2, f
-;	goto	$-5
-;	decfsz	on_counter_1, f
-;	goto	$-9
-;
-;	bcf	status, c
-;	btfsc	bt1
-;	return			;too short....
-;
-;	;TODO add counter to avoid lock during key malofunction
-;	btfss	bt1
-;	goto	$-1		;wait for key to be released
-;	bsf	status, c
-;	return			;pressed for time long enough
+	return			;pressed for time long enough

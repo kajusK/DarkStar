@@ -70,8 +70,7 @@ adc_convert_1
 	goto	adc_convert_1
 
 ;conversion finished, reenable interrupts
-	;TODO
-	;bcf	pwm1			;pwm pulsed is fucked anyway, stop it
+	bcf	pwm1			;pwm pulsed is fucked anyway, stop it
 	bsf	intcon, gie		;reenable interrupts
 	movf	ADRESH, w
 	movwf	adc_result		;store the result
@@ -96,7 +95,6 @@ adc_voltage_check
 ; 2 stack levels and tmp
 ;------------------------------
 adc_task
-	return		;TODO
 	call	adc_convert		;result in W
 	sublw	ADC_TRESHOLD		;treshold - adc_result
 	btfss	status, c
@@ -107,7 +105,6 @@ adc_task
 
 ;apply pwm output correction
 adc_task_update
-	return
 	movf	led1_intensity, w
 	call	adc_pwm_calculate	;get the new pwm
 	call	pwm1_set		;and set it
