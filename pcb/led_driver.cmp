@@ -1,0 +1,269 @@
+Cmp-Mod V01 Created by Cvpcb (2015-05-19 BZR 5670)-product   date = Út 14. červenec 2015, 21:23:43 CEST
+
+BeginCmp
+TimeStamp = /558C597A;
+Reference = C1;
+ValeurCmp = 470n;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /558C25EB;
+Reference = C2;
+ValeurCmp = 820n;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /558B6186;
+Reference = C4;
+ValeurCmp = 820n;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /558D02F7;
+Reference = C5;
+ValeurCmp = 1n;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /558D0396;
+Reference = C6;
+ValeurCmp = 1n;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /558CB967;
+Reference = C8;
+ValeurCmp = 1u;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55847FE7;
+Reference = D1;
+ValeurCmp = BAT60A;
+IdModule  = Diodes_SMD:SOD-323;
+EndCmp
+
+BeginCmp
+TimeStamp = /558480FB;
+Reference = D2;
+ValeurCmp = LED1;
+IdModule  = LEDs:LED-XP-G_CREE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5588927A;
+Reference = D4;
+ValeurCmp = BAT60A;
+IdModule  = Diodes_SMD:SOD-323;
+EndCmp
+
+BeginCmp
+TimeStamp = /55889286;
+Reference = D5;
+ValeurCmp = LED2;
+IdModule  = LEDs:LED-XP-G_CREE;
+EndCmp
+
+BeginCmp
+TimeStamp = /558C7CA9;
+Reference = D6;
+ValeurCmp = LL103;
+IdModule  = Diodes_SMD:Diode-MiniMELF_Standard;
+EndCmp
+
+BeginCmp
+TimeStamp = /558B5893;
+Reference = D7;
+ValeurCmp = LED;
+IdModule  = LEDs:LED-0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5584804C;
+Reference = L1;
+ValeurCmp = 22uH;
+IdModule  = Choke_SMD:Choke_SMD_Wuerth-WE-PD2-Typ-MS;
+EndCmp
+
+BeginCmp
+TimeStamp = /55889280;
+Reference = L2;
+ValeurCmp = 22uH;
+IdModule  = Choke_SMD:Choke_SMD_Wuerth-WE-PD2-Typ-MS;
+EndCmp
+
+BeginCmp
+TimeStamp = /558C335D;
+Reference = P1;
+ValeurCmp = POWER;
+IdModule  = Connect:GS2;
+EndCmp
+
+BeginCmp
+TimeStamp = /55A57924;
+Reference = P2;
+ValeurCmp = ICSP;
+IdModule  = Housings_SOT-23_SOT-143_TSOT-6:SOT-143;
+EndCmp
+
+BeginCmp
+TimeStamp = /55885412;
+Reference = Q1;
+ValeurCmp = DMP2305U;
+IdModule  = Housings_SOT-23_SOT-143_TSOT-6:SOT-23_Handsoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = /558892A7;
+Reference = Q2;
+ValeurCmp = DMP2305U;
+IdModule  = Housings_SOT-23_SOT-143_TSOT-6:SOT-23_Handsoldering;
+EndCmp
+
+BeginCmp
+TimeStamp = /55885BDE;
+Reference = R1;
+ValeurCmp = 82R;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55885C16;
+Reference = R2;
+ValeurCmp = 10k;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /558C24EB;
+Reference = R3;
+ValeurCmp = 100k;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /558F2EB9;
+Reference = R4;
+ValeurCmp = 4k7;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5584820F;
+Reference = R5;
+ValeurCmp = 0,1R;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /558B6341;
+Reference = R6;
+ValeurCmp = 100k;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /558F2640;
+Reference = R7;
+ValeurCmp = 4k7;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5588846A;
+Reference = R8;
+ValeurCmp = 2k2;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55882FCF;
+Reference = R10;
+ValeurCmp = 10k;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55883018;
+Reference = R11;
+ValeurCmp = 10k;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /558892B5;
+Reference = R12;
+ValeurCmp = 82R;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /558BE9D9;
+Reference = R13;
+ValeurCmp = 10k;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /558892BB;
+Reference = R14;
+ValeurCmp = 10k;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /558BC0B6;
+Reference = R15;
+ValeurCmp = 10k;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /55889297;
+Reference = R17;
+ValeurCmp = 0,1R;
+IdModule  = Resistors_SMD:R_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /558892D2;
+Reference = R18;
+ValeurCmp = 2k2;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /558B5940;
+Reference = R19;
+ValeurCmp = 470R;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /55882E33;
+Reference = SW1;
+ValeurCmp = UP;
+IdModule  = Buttons_Switches_SMD:SW_SPST_FSMSM;
+EndCmp
+
+BeginCmp
+TimeStamp = /55882F5C;
+Reference = SW2;
+ValeurCmp = DOWN;
+IdModule  = Buttons_Switches_SMD:SW_SPST_FSMSM;
+EndCmp
+
+BeginCmp
+TimeStamp = /558A86BB;
+Reference = U1;
+ValeurCmp = PIC16(L)F684-I/ST;
+IdModule  = Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm;
+EndCmp
+
+EndListe
