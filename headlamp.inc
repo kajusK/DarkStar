@@ -21,7 +21,7 @@ PWM_DUTY_FULL	equ	PWM_DUTY_HALF*2
 LED_MODE_MAX	equ	5
 
 ;ADC
-; Cut off adc, when this threshold is exceeded, the devices moves to sleep as
+; When this threshold is exceeded, the devices moves to sleep as
 ; the battery is almost dead
 ;MODIFY - BASED ON PARTS YOU USED
 ; treshold_adc = 255*sense_diode_fwd/(treshold_voltage - supply_diode_fwd)
@@ -72,6 +72,7 @@ bt2_action	equ	4
 bt2_long	equ	5
 bt1_completed	equ	6
 bt2_completed	equ	7
+
 ;----------------------pins-------------------
 #define	pwm1	porta, 5
 #define pwm2	portc, 2
@@ -160,21 +161,3 @@ bt2_completed	equ	7
 	fsr_sav
 ;------------------------
 	endc
-
-;**********************************************************************
-; Macros
-;**********************************************************************
-;---------------------------
-; set outputs to values from pwm_data
-; par1 and par2 defines bits to read
-; 6 cycles
-;---------------------------
-PWM_SET macro par1, par2
-	bcf	pwm1
-	btfsc	pwm_data, par1
-	bsf	pwm1
-
-	bcf	pwm2
-	btfsc	pwm_data, par2
-	bsf	pwm2
-	endm

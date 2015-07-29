@@ -19,12 +19,12 @@
 ; cause light output instability.
 ;
 ; Supply voltage can be calculated:
-; Ucc = 256*diode_fwd/ADRESH
+; Ucc = 255*diode_fwd/ADRESH
 ;
 ; Pwm duty in % for output voltage U
-; Pwm = U / Ucc = U*ADRESH / (256*diode_fwd) * 100
+; Pwm = U / Ucc = U*ADRESH / (255*diode_fwd) * 100
 ;
-; For selected values components, the ADRESH might be between 179 (3V) and
+; For selected values components, the ADRESH might be between 158 (3V) and
 ; around 100 (5V). To simplify calculations of pwm duty, the following equation
 ; was designed, all constants were choosen experimentally for intesity in <0,5>
 ; and pwm in <0,255>

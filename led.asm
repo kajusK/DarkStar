@@ -7,10 +7,12 @@
 ; jakub.kaderka@gmail.com
 ; 2015
 ;------------------------------
-; ad.asm
+; led.asm
+;------------------------------
+; Basic led control
 ;**********************************************************************
 ;-----------------------------------
-; Enable/disable led
+; Enable/disable/toggl led
 ;
 ; set port as input/output which effectively
 ; disable/enable comparator output
@@ -21,10 +23,25 @@ led_on	macro r_tris, pin
 	bcf	r_tris, pin
 	bcf	status, rp0
 	endm
-
+;----------------------------------
 led_off macro r_tris, pin
 	bsf	status, rp0
 	bsf	r_tris, pin
+	bcf	status, rp0
+	endm
+;----------------------------------
+led_toggle macro r_tris, pin
+	local	led_toggle_1
+	bsf	status, rp0
+
+	btfsc	r_tris, pin
+	goto	led_toggle_1
+
+	bsf	r_tris, pin
+	goto	led_toggle_end
+led_toggle_1
+	bcf	r_tris, pin
+led_toggle_end
 	bcf	status, rp0
 	endm
 
@@ -51,7 +68,7 @@ led_set	MACRO r_intensity, led_p, led_n, f_pwm_set
 	call	led_intensity_limit
 	movwf	r_intensity		;save new intensity
 
-	led_off	led_p, led_n
+	led_off	led_p, led_n	;TODO keep leds always on?
 	movf	r_intensity, w
 	btfss	status, z
 	led_on	led_p, led_n

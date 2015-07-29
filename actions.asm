@@ -14,12 +14,18 @@
 ; 1 level stack
 ;-----------------------------------
 led_down MACRO reg, function
-	movf	reg, f
+;failsafe check
+	movf	reg, w
 	btfsc	status, z
 	return				;already zero, nothing to do
+;real end check
+	sublw	1
+	btfsc	status, z		;already at lowest, nothing to do
+	return
+
 	decf	reg, w
 	call	function
-
+	return
 	ENDM
 ;--------------------------
 
@@ -41,7 +47,7 @@ mode_up_1
 mode_down
 	btfsc	mode, led_sel
 	goto	mode_down_1		;led2 is selected
-
+;led 1
 	led_down	led1_intensity, led1_set
 
 ;led 2
@@ -54,15 +60,17 @@ mode_down_1
 ;toggle led selector bit
 mode_switch_start
 	btfss	mode, led_sel
-	goto	mode_switch_start_1
-	bcf	mode, led_sel
+	goto	mode_switch_start_1	;led1 is selected, change
 
-	bsf	ledv
+;led2 was selected, turn it off
+	bcf	mode, led_sel
+	led_off	led2
 	return
 
+;select led2
 mode_switch_start_1
 	bsf	mode, led_sel
-	bcf	ledv
+	led_on	led2
 	return
 
 ;just placeholder for key macro, nothing useful to do now here
@@ -131,7 +139,6 @@ power_off_sleep
 	goto	power_off_sleep	;was pressed for too short time, sleep again
 
 ;ok, time to start working again
-
 	bcf	intcon, raie
 	bsf	intcon, gie	;reenable timer interrupt
 
@@ -139,12 +146,11 @@ power_off_sleep
 	bsf	cm2con0, c2on	;reenable comparators
 
 ;restore led states
-	movf	led1_intensity,f
-	btfss	status, z
 	led_on	led1
 
-	movf	led2_intensity, f
-	btfss	status, z
+	btfsc	mode, led_sel
 	led_on	led2		;reenable leds if were enabled before
+
+	call	key_bt1_wait	;wait for key to be released
 
 	return

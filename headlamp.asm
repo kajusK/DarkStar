@@ -18,7 +18,14 @@
 ;        voltage measure -|RC3/AN7         RC2/AN6|- LED2 PWM
 ;                         -------------------------
 ;------------------------------
-; BT1 wakes pic from sleep
+; Press bt1 for about 2 sec to turn headlamp on
+; Press it again for more than 2 sec to turn it off
+;
+; Short press of bt1 increases light output, bt2 decreases
+;
+; Led1 is turned on all times except power off state, led2 is controled by
+; long press of bt2 (on/off), long press bt2 also switches currently controled
+; led's intensity
 ;**********************************************************************
 	LIST P=16F616, R=DEC
 	include p16f616.inc
@@ -37,6 +44,14 @@
 	org 0x4
 	goto interrupt
 
+;######################################################################
+;all the important parts :)
+;######################################################################
+	include led.asm
+	include pwm.asm
+	include ad.asm
+	include key.asm
+	include actions.asm
 ;######################################################################
 ;interrupt
 ;######################################################################
@@ -62,7 +77,7 @@ interrupt
 	movwf	intcon
 	goto	int_end
 
-;wake up from sleep when gie stayed enabled, just return
+;wake up from sleep when gie was forgotten enabled, just return
 int_raif
 	movf	porta, f	;update latches
 	bcf	intcon, raif
@@ -157,15 +172,6 @@ int_end
 	retfie
 
 ;######################################################################
-;all the important parts :)
-;######################################################################
-	include led.asm
-	include pwm.asm
-	include ad.asm
-	include key.asm
-	include actions.asm
-
-;######################################################################
 ;Init
 ;######################################################################
 init
@@ -251,12 +257,18 @@ init
 ; battery check...
 ;**************************************
 ;init adc result, checking if voltage is high enough not neccesary, device
-; will turn off itself in few us anyway
+; will turn off itself in few us anyway, voltage will be checked when turning on
 	call	adc_voltage_check
 
 ;enable interrupt -> pwm
 	bsf	intcon, gie
 
+;set leds to default states
+	movlw	1
+	call	led1_set
+	movlw	1
+	call	led2_set
+;set leds to default power output
 ;finally, go to sleep, wait for button press to wake up
 	call	power_off
 ;######################################################################

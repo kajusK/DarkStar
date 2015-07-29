@@ -9,14 +9,13 @@
 ;------------------------------
 ; key.asm
 ;------------------------------
-;
 ; The device has two buttons which can be used in two states
 ;
 ; short press < 2s
-; 2s < long press
+; long press > 2s
 ;
 ; long press on bt1 wakes the device up or turns it off
-; long press on bt2 changes the led which is currently controlled by keys
+; long press on bt2 changes the led which is currently controlled
 ;
 ; short press changes brightness
 ;
@@ -181,13 +180,15 @@ key_powerup
 	decfsz	on_counter_3, f
 	goto	$-1		;3*c3 - 1
 	decfsz	on_counter_2, f
-	goto	$-8		;(3*255-1+8)*c2-1 =
+	goto	$-8		;(3*c3-1+8)*c2-1 = about 100ms
 	decfsz	on_counter_1, f
 	goto	$-12
 
-	;TODO add counter to avoid lock during key malofunction
-;wait for key to be released
-	btfss	bt1
-	goto	$-1		;wait for key to be released
 	bsf	status, c
 	return			;pressed for time long enough
+
+;wait for key to be released
+key_bt1_wait
+	btfss	bt1
+	goto	$-1
+	return

@@ -33,8 +33,21 @@
 ; correction to pwm duty to keep the voltage stable.
 ;**********************************************************************
 ;---------------------------
+; set outputs to values from pwm_data
+; par1 and par2 defines bits to read
+;---------------------------
+PWM_SET macro par1, par2
+	bcf	pwm1
+	btfsc	pwm_data, par1
+	bsf	pwm1
+
+	bcf	pwm2
+	btfsc	pwm_data, par2
+	bsf	pwm2
+	endm
+
+;---------------------------
 ; set pwm_tmp_data, par1 to 1 if pwm_tmp_data, par2 is 0
-; 6 cycles
 ;---------------------------
 PWM_TOGGLE_CONF macro par1, par2
 	bcf	pwm_tmp_data, par1
@@ -44,7 +57,6 @@ PWM_TOGGLE_CONF macro par1, par2
 
 ;---------------------------
 ; set pwm_tmp_data, par1 to pwm_tmp_data, par2
-; 6 cycles
 ;---------------------------
 PWM_COPY_CONF macro par1, par2
 	bcf	pwm_tmp_data, par1
@@ -57,10 +69,6 @@ PWM_COPY_CONF macro par1, par2
 ;
 ; calculate variables for pwm generator (based on pwm_dutyX)
 ; and update them when finished
-;
-; Generates shorter part of the pulse:
-;	duty <= 50% : generate high part of pulse
-;	duty >= 50% : generate low part of pulse
 ;
 ; Calculated values sets the time of the shorter pulse (pwm_time1)
 ; and the difference between shorter and longer part (pwm_time2)
