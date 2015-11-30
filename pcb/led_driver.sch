@@ -87,8 +87,8 @@ Rev "1.1"
 Comp "Kajus"
 Comment1 "Based on http://ww1.microchip.com/downloads/en/AppNotes/00874C.pdf"
 Comment2 "Operates at ~130kHz, designed for ~1A per led"
-Comment3 "Use direct connection to pic pads for programming, no space on pcb left for connector..."
-Comment4 "Turns off at 3V, max input voltage is 5,3V, designed for LiIon batteries"
+Comment3 "Turns off at 3V, max input voltage is 5,3V, designed for LiIon batteries"
+Comment4 ""
 $EndDescr
 $Comp
 L D_Schottky D1
