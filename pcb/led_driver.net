@@ -1,8 +1,8 @@
 (export (version D)
   (design
-    (source /home/kajus/Prace/dps/kicad/projects/led_driver/led_driver.sch)
-    (date Pá 17. červenec 2015, 22:31:54 CEST)
-    (tool "Eeschema (2015-05-19 BZR 5670)-product")
+    (source /home/kajus/Prace/dps/kicad/projects/headlamp/led_driver.sch)
+    (date Út 1. prosinec 2015, 19:03:15 CET)
+    (tool "Eeschema (2015-11-29 BZR 6336, Git 7b0d981)-product")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
         (title "Headlamp led driver")
@@ -12,8 +12,8 @@
         (source led_driver.sch)
         (comment (number 1) (value "Based on http://ww1.microchip.com/downloads/en/AppNotes/00874C.pdf"))
         (comment (number 2) (value "Operates at ~130kHz, designed for ~1A per led"))
-        (comment (number 3) (value "Use direct connection to pic pads for programming, no space on pcb left for connector..."))
-        (comment (number 4) (value "Turns off at 3V, max input voltage is 5,3V, designed for LiIon batteries")))))
+        (comment (number 3) (value "Turns off at 3V, max input voltage is 5,3V, designed for LiIon batteries"))
+        (comment (number 4) (value "")))))
   (components
     (comp (ref D1)
       (value BAT60A)
@@ -239,50 +239,39 @@
       (tstamp 55A57924))
     (comp (ref U1)
       (value "PIC16(L)F616-I/ST")
+      (footprint Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm)
       (libsource (lib microchip_pic16mcu) (part "PIC16(L)F616-I/P"))
       (sheetpath (names /) (tstamps /))
       (tstamp 55A96DB1)))
   (libparts
-    (libpart (lib pspice) (part INDUCTOR)
-      (fields
-        (field (name Reference) L)
-        (field (name Value) INDUCTOR))
-      (pins
-        (pin (num 1) (name 1) (type input))
-        (pin (num 2) (name 2) (type input))))
-    (libpart (lib pspice) (part R)
-      (description Resistance)
-      (fields
-        (field (name Reference) R)
-        (field (name Value) R))
-      (pins
-        (pin (num 1) (name ~) (type passive))
-        (pin (num 2) (name ~) (type passive))))
-    (libpart (lib microchip_pic16mcu) (part "PIC16(L)F616-I/P")
-      (description "PIC16(L)F616, 2048W FLASH, 128B SRAM, PDIP-14")
-      (docs http://ww1.microchip.com/downloads/en/DeviceDoc/41288F.pdf)
+    (libpart (lib conn) (part CONN_01X02)
+      (description "Connector 01x02")
       (footprints
-        (fp DIP*)
-        (fp PDIP*)
-        (fp SO*))
+        (fp Pin_Header_Straight_1X02)
+        (fp Pin_Header_Angled_1X02)
+        (fp Socket_Strip_Straight_1X02)
+        (fp Socket_Strip_Angled_1X02))
       (fields
-        (field (name Reference) U)
-        (field (name Value) "PIC16(L)F616-I/P"))
+        (field (name Reference) P)
+        (field (name Value) CONN_01X02))
       (pins
-        (pin (num 1) (name VDD) (type power_in))
-        (pin (num 2) (name RA5/T1CKI/OSC1/CLKIN) (type BiDi))
-        (pin (num 3) (name RA4/AN3/~T1G~/OSC2/CLKOUT) (type BiDi))
-        (pin (num 4) (name RA3/~MCLR~/Vpp) (type input))
-        (pin (num 5) (name P1A/CCP1/RC5) (type BiDi))
-        (pin (num 6) (name P1B/C2OUT/RC4) (type BiDi))
-        (pin (num 7) (name P1C/C12IN3-/AN7/RC3) (type BiDi))
-        (pin (num 8) (name P1D/C12IN2-/AN6/RC2) (type BiDi))
-        (pin (num 9) (name C12IN1-/AN5/RC1) (type BiDi))
-        (pin (num 10) (name C2IN+/AN4/RC0) (type BiDi))
-        (pin (num 11) (name RA2/AN2/T0CKI/INT/C1OUT) (type BiDi))
-        (pin (num 12) (name RA1/AN1/C12IN0-/Vref/ICSPCLK) (type BiDi))
-        (pin (num 13) (name RA0/AN0/C1IN+/ICSPDAT) (type BiDi))
-        (pin (num 14) (name VSS) (type power_in))))
+        (pin (num 1) (name P1) (type passive))
+        (pin (num 2) (name P2) (type passive))))
+    (libpart (lib conn) (part CONN_01X04)
+      (description "Connector 01x04")
+      (footprints
+        (fp Pin_Header_Straight_1X04)
+        (fp Pin_Header_Angled_1X04)
+        (fp Socket_Strip_Straight_1X04)
+        (fp Socket_Strip_Angled_1X04))
+      (fields
+        (field (name Reference) P)
+        (field (name Value) CONN_01X04))
+      (pins
+        (pin (num 1) (name P1) (type passive))
+        (pin (num 2) (name P2) (type passive))
+        (pin (num 3) (name P3) (type passive))
+        (pin (num 4) (name P4) (type passive))))
     (libpart (lib device) (part C_Small)
       (description "Unpolarized capacitor")
       (footprints
@@ -325,6 +314,13 @@
       (pins
         (pin (num 1) (name K) (type passive))
         (pin (num 2) (name A) (type passive))))
+    (libpart (lib pspice) (part INDUCTOR)
+      (fields
+        (field (name Reference) L)
+        (field (name Value) INDUCTOR))
+      (pins
+        (pin (num 1) (name 1) (type input))
+        (pin (num 2) (name 2) (type input))))
     (libpart (lib device) (part LED)
       (footprints
         (fp LED-3MM)
@@ -340,6 +336,31 @@
       (pins
         (pin (num 1) (name K) (type passive))
         (pin (num 2) (name A) (type passive))))
+    (libpart (lib microchip_pic16mcu) (part "PIC16(L)F616-I/P")
+      (description "2048W FLASH, 128B SRAM, PDIP-14")
+      (docs http://ww1.microchip.com/downloads/en/DeviceDoc/41288F.pdf)
+      (footprints
+        (fp DIP*)
+        (fp PDIP*)
+        (fp SO*))
+      (fields
+        (field (name Reference) U)
+        (field (name Value) "PIC16(L)F616-I/P"))
+      (pins
+        (pin (num 1) (name VDD) (type power_in))
+        (pin (num 2) (name RA5/T1CKI/OSC1/CLKIN) (type BiDi))
+        (pin (num 3) (name RA4/AN3/~T1G~/OSC2/CLKOUT) (type BiDi))
+        (pin (num 4) (name RA3/~MCLR~/Vpp) (type input))
+        (pin (num 5) (name P1A/CCP1/RC5) (type BiDi))
+        (pin (num 6) (name P1B/C2OUT/RC4) (type BiDi))
+        (pin (num 7) (name P1C/C12IN3-/AN7/RC3) (type BiDi))
+        (pin (num 8) (name P1D/C12IN2-/AN6/RC2) (type BiDi))
+        (pin (num 9) (name C12IN1-/AN5/RC1) (type BiDi))
+        (pin (num 10) (name C2IN+/AN4/RC0) (type BiDi))
+        (pin (num 11) (name RA2/AN2/T0CKI/INT/C1OUT) (type BiDi))
+        (pin (num 12) (name RA1/AN1/C12IN0-/Vref/ICSPCLK) (type BiDi))
+        (pin (num 13) (name RA0/AN0/C1IN+/ICSPDAT) (type BiDi))
+        (pin (num 14) (name VSS) (type power_in))))
     (libpart (lib device) (part Q_PMOS_GSD)
       (description "Transistor P-MOSFET (general)")
       (fields
@@ -349,49 +370,31 @@
         (pin (num 1) (name G) (type input))
         (pin (num 2) (name S) (type passive))
         (pin (num 3) (name D) (type passive))))
+    (libpart (lib pspice) (part R)
+      (description Resistance)
+      (fields
+        (field (name Reference) R)
+        (field (name Value) R))
+      (pins
+        (pin (num 1) (name ~) (type passive))
+        (pin (num 2) (name ~) (type passive))))
     (libpart (lib device) (part SW_PUSH)
-      (description "Push Button")
+      (description Button)
       (fields
         (field (name Reference) SW)
         (field (name Value) SW_PUSH))
       (pins
         (pin (num 1) (name 1) (type passive))
-        (pin (num 2) (name 2) (type passive))))
-    (libpart (lib conn) (part CONN_01X02)
-      (footprints
-        (fp Pin_Header_Straight_1X02)
-        (fp Pin_Header_Angled_1X02)
-        (fp Socket_Strip_Straight_1X02)
-        (fp Socket_Strip_Angled_1X02))
-      (fields
-        (field (name Reference) P)
-        (field (name Value) CONN_01X02))
-      (pins
-        (pin (num 1) (name P1) (type passive))
-        (pin (num 2) (name P2) (type passive))))
-    (libpart (lib conn) (part CONN_01X04)
-      (footprints
-        (fp Pin_Header_Straight_1X04)
-        (fp Pin_Header_Angled_1X04)
-        (fp Socket_Strip_Straight_1X04)
-        (fp Socket_Strip_Angled_1X04))
-      (fields
-        (field (name Reference) P)
-        (field (name Value) CONN_01X04))
-      (pins
-        (pin (num 1) (name P1) (type passive))
-        (pin (num 2) (name P2) (type passive))
-        (pin (num 3) (name P3) (type passive))
-        (pin (num 4) (name P4) (type passive)))))
+        (pin (num 2) (name 2) (type passive)))))
   (libraries
+    (library (logical conn)
+      (uri /home/kajus/Prace/dps/kicad/kicad-library/library/conn.lib))
     (library (logical pspice)
       (uri /home/kajus/Prace/dps/kicad/kicad-library/library/pspice.lib))
     (library (logical microchip_pic16mcu)
       (uri /home/kajus/Prace/dps/kicad/kicad-library/library/microchip_pic16mcu.lib))
     (library (logical device)
-      (uri /home/kajus/Prace/dps/kicad/kicad-library/library/device.lib))
-    (library (logical conn)
-      (uri /home/kajus/Prace/dps/kicad/kicad-library/library/conn.lib)))
+      (uri /home/kajus/Prace/dps/kicad/kicad-library/library/device.lib)))
   (nets
     (net (code 1) (name GND)
       (node (ref P2) (pin 2))
