@@ -81,14 +81,14 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title "Headlamp led driver"
-Date ""
-Rev "1.1"
+Title "Darkstar - Double Cree XP-G2 Headlamp "
+Date "2015-12-04"
+Rev "1.2"
 Comp "Kajus"
 Comment1 "Based on http://ww1.microchip.com/downloads/en/AppNotes/00874C.pdf"
 Comment2 "Operates at ~130kHz, designed for ~1A per led"
-Comment3 "Turns off at 3V, max input voltage is 5,3V, designed for LiIon batteries"
-Comment4 ""
+Comment3 "Turns off at 3V, max input voltage is 5,3V"
+Comment4 "LiIon batteries recommended"
 $EndDescr
 $Comp
 L D_Schottky D1
@@ -835,8 +835,6 @@ F 3 "" H 8000 850 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 Connection ~ 8000 950 
-Text Notes 7400 600  0    60   ~ 0
-diode to avoid reset during switching the led on (voltage may drop for a while)
 $Comp
 L PWR_FLAG #FLG018
 U 1 1 558CEDEA
@@ -1046,8 +1044,6 @@ Wire Wire Line
 Wire Wire Line
 	4950 2350 4950 2200
 Connection ~ 4550 2350
-Text Notes 600  1500 0    60   ~ 0
-designed for LiIon battery\nmax 5V, min 3V (below 3V powered off by MCU)
 Wire Wire Line
 	1500 700  1500 650 
 Wire Wire Line
