@@ -1,9 +1,9 @@
-(kicad_pcb (version 4) (host pcbnew "(2015-11-29 BZR 6336, Git 7b0d981)-product")
+(kicad_pcb (version 4) (host pcbnew 4.0.1-stable)
 
   (general
     (links 96)
     (no_connects 0)
-    (area 97.370107 81.876107 128.689893 113.195893)
+    (area 96.642143 81.0694 131.449858 113.639601)
     (thickness 1.6)
     (drawings 8)
     (tracks 428)
@@ -699,7 +699,7 @@
     (fp_text reference R3 (at 2.4384 0.1524) (layer F.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_text value 190k (at 0 2.1) (layer F.Fab)
+    (fp_text value 180k (at 0 2.1) (layer F.Fab)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_line (start -1.6 -1) (end 1.6 -1) (layer F.CrtYd) (width 0.05))
@@ -1185,7 +1185,7 @@
     (fp_text reference R6 (at -0.1016 1.4605 90) (layer F.SilkS) hide
       (effects (font (size 0.8 0.8) (thickness 0.15)))
     )
-    (fp_text value 190k (at 0 2.1 90) (layer F.Fab)
+    (fp_text value 180k (at 0 2.1 90) (layer F.Fab)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_line (start -1.6 -1) (end 1.6 -1) (layer F.CrtYd) (width 0.05))
