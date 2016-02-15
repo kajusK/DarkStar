@@ -86,7 +86,7 @@ Date "2015-12-04"
 Rev "1.2"
 Comp "Kajus"
 Comment1 "Based on http://ww1.microchip.com/downloads/en/AppNotes/00874C.pdf"
-Comment2 "Operates at ~130kHz, designed for ~1A per led"
+Comment2 "Operates at about 130kHz, designed for 1A per led"
 Comment3 "Turns off at 3V, max input voltage is 5,3V"
 Comment4 "LiIon batteries recommended"
 $EndDescr

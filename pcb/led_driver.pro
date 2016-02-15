@@ -1,4 +1,4 @@
-update=So 20. červen 2015, 09:18:06 CEST
+update=Po 15. únor 2016, 20:33:16 CET
 version=1
 last_client=kicad
 [pcbnew]
@@ -105,3 +105,13 @@ LibName73=/home/kajus/Prace/dps/kicad/kicad-library/library/ESD_Protection
 LibName74=/home/kajus/Prace/dps/kicad/kicad-library/library/Altera
 LibName75=/home/kajus/Prace/dps/kicad/kicad-library/library/74xx
 LibName76=/home/kajus/Prace/dps/kicad/kicad-library/library/74xgxx
+[schematic_editor]
+version=1
+PageLayoutDescrFile=
+PlotDirectoryName=
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=
+SpiceForceRefPrefix=0
+SpiceUseNetNumbers=0
+LabSize=60
