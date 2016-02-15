@@ -7,7 +7,7 @@
 ; jakub.kaderka@gmail.com
 ; 2015
 ;------------------------------
-;                                 PIC 16F648
+;                                 PIC 16F616
 ;                         ------------\/-----------
 ;                        -|Vcc                 VSS|-
 ;               LED1 PWM -|RA5       RA0/AN0/C1IN+|- LED1 level set
