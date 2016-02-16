@@ -5,6 +5,8 @@ Small, lightweight and waterproof LED headlamp with two Cree XP-G2 leds. Can be
 used in biking, caving, mine exploration, hiking... But **always** carry a
 **backup** light source.
 
+![Top side](./images/top.jpg)
+
 Features
 --------
 * Two 5W Cree XP-G LEDs with independently controlled brightness
@@ -18,6 +20,7 @@ Features
 * 3D printed battery box (hopefully waterproof) for two 18650 cells
 * Whole headlamp including batteries weights only TODO grams
 
+
 Controls
 --------
 * Connect headlamp to battery, LEDs will flash and device goes to sleep
@@ -26,6 +29,9 @@ Controls
 * Press and hold down button for about 2 seconds to turn on/off second LED
 * When the second LED is on, use up/down buttons to control its intensity
 * Press and hold up button for about 2 seconds to turn the lamp off
+
+![Body](./images/body.jpg)
+
 
 Warning
 -------
@@ -84,3 +90,5 @@ be made from plastic (e.g. on 3D printer).
 
 The battery box is printed on 3D printer from ABS (I would rather use aluminium,
 but I don't have access to milling machine).
+
+![Headlamp body](./images/dimensions.jpg)
