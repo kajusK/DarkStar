@@ -33,15 +33,54 @@ LiIon cells can catch fire or explode if not handled properly. The hardware
 design has not been extensively tested, the headlamp could die any time, don't
 rely on it as a single source of light.
 
+The headlamp body can get quite hot if both LEDs are running on full power,
+there's no thermal protection, you have been warned.
+
 License
 -------
 This headlamp is provided under opensource license WITHOUT ANY WARRANTY, see
 [LICENSE](./LICENSE) for more details.
 
 HowTo
------
-* **cad** directory contains body designs in FreeCad
+=====
+Directories
+-----------
+* **cad** headlamp body and battery box designs in FreeCad
 * **pcb** contains all kicad files including BillOfMaterials for electronics,
 	please note plated vias under Cree LEDs are required to move heat from
-	LED to heatsink (body). Gerber files for manufacturing are included
+	LED to heatsink (body). Gerber files for manufacturing are included.
 * **pic** contains assembly source code for the headlamp MCU
+
+Electronics & software
+----------------------
+For overview how the hardware works, check
+[microchip application note](http://ww1.microchip.com/downloads/en/AppNotes/00874C.pdf)
+and [source code README](./pic/README.md).
+
+To reduce manufacturing costs, the heat from CREE LEDs is transferred to aluminium
+body using several plated vias under the LED itself thus avoiding the need for
+aluminium PCB or big star heat sink for each LED. For some math background, check
+the [Cree thermal management guide](http://www.cree.com/~/media/Files/Cree/LED%20Components%20and%20Modules/XLamp/XLamp%20Application%20Notes/XLamp_PCB_Thermal.pdf).
+
+Power wires are soldered directly to the PCB. To program the MCU, solder
+wires to ICMP pins or build some kind of pin-touch interface. Use *make* in
+pic directory to compile the sources (assuming you are running Linux), also
+you can use *make burn* to upload the firmware using pickit2.
+
+Lenses
+------
+The wide beam LED can be used without lenses, the beam width is enough for my
+needs, for the narrow beam LED you can buy any compatible lens (it will require
+some modifications due to limited space on PCB though) or build your own
+using few trash pieces of metal and a lathe.
+
+Body
+----
+The body has been made of a piece of aluminium *6082 T6* on a small lathe. Top
+cover is made from plexiglass taken from old diving goggles. Waterproofness is
+ensured by big O-ring between body and glass and two small O-rings on the
+control knob. The body works also as a heat sink for LEDs, therefore it can't
+be made from plastic (e.g. on 3D printer).
+
+The battery box is printed on 3D printer from ABS (I would rather use aluminium,
+but I don't have access to milling machine).
