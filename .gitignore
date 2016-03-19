@@ -2,3 +2,6 @@
 *-bak
 *.fcstd1
 *.step
+*.cod
+*.hex
+*.lst
