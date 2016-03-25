@@ -38,7 +38,7 @@ etc.
 
 ADC task
 --------
-ADC task is called every 200ms, it checks the battery voltage and corrects
+ADC task is running at 8Hz, it checks the battery voltage and corrects
 the PWM output to keep the reference voltage stable when the supply voltage
 drops.
 

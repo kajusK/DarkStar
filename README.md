@@ -16,6 +16,7 @@ Features
 * Small red status LED, can be replaced with UV or used as emergency light when the battery is almost dead (required swapping one resistor and modifying firmware)
 * Controlled by PIC 16F616 MCU (source code included)
 * Low power off current (3,2 uA), no need to unplug battery during power off state
+* Low power mode when battery is almost dead (single LED on lowest power)
 * Waterproof aluminium body
 * 3D printed battery box (hopefully waterproof) for two 18650 Li-Ion cells
 * Whole headlamp including batteries weights only TODO grams
