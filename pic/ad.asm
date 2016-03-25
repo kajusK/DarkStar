@@ -1,7 +1,7 @@
 ;**********************************************************************
 ;Led headlamp
 ;PIC 16F616
-;internal 4MHz
+;internal 8MHz
 ;------------------------------
 ; Jakub Kaderka
 ; jakub.kaderka@gmail.com
@@ -14,7 +14,7 @@
 ;
 ; As the measuring takes some time and measuring diode is connected
 ; to pwm1 pin to keep the sleep current as low as possible, the
-; interrupt must be dissabled for time of measurement (500ns). Also, the pwm1
+; interrupt must be dissabled for time of measurement (2us). Also, the pwm1
 ; must be in high state. Therefore AD can't be used very often as it would
 ; cause light output instability.
 ;
@@ -24,7 +24,7 @@
 ; Pwm duty in % for output voltage U
 ; Pwm = U / Ucc = U*ADRESH / (255*diode_fwd) * 100
 ;
-; For selected values components, the ADRESH might be between 158 (3V) and
+; For selected values of components, the ADRESH can be between 158 (3V) and
 ; around 100 (5V). To simplify calculations of pwm duty, the following equation
 ; was designed, all constants were choosen experimentally for intesity in <0,5>
 ; and pwm in <0,255>
@@ -45,12 +45,11 @@
 ;------------------------------
 adc_convert
 	bcf	intcon, gie		;disable interrupt
-	btfsc	pwm1
-	goto	adc_convert_nowait	;was on, start conversion
+	btfss	pwm1
+	bsf	pwm1			;set output to H
 
-;pwm was low, have to wait for a while (20ns) to get stable voltage
+;wait for a while (10us) to get stable voltage
 adc_convert_wait
-	bsf	pwm1
 	goto	$+1
 	goto	$+1
 	goto	$+1
@@ -62,16 +61,18 @@ adc_convert_wait
 	goto	$+1
 	goto	$+1
 
-adc_convert_nowait
+adc_convert_run
 	bsf	adcon0, go		;start conversion
 ;run conversion
 adc_convert_1
 	btfsc	adcon0, go
 	goto	adc_convert_1
 
-;conversion finished, reenable interrupts
-	bcf	pwm1			;pwm pulsed is fucked anyway, stop it
+;conversion finished, reenable interrupts and force new pwm pulse
+	clrf	tmr0
+	bsf	intcon, t0if		;force interrupt to occur - generate new pwm
 	bsf	intcon, gie		;reenable interrupts
+
 	movf	ADRESH, w
 	movwf	adc_result		;store the result
 	return
@@ -105,14 +106,14 @@ adc_task
 
 ;apply pwm output correction
 adc_task_update
-	movf	led1_intensity, w
-	call	adc_pwm_calculate	;get the new pwm
-	call	pwm1_set		;and set it
-
-	movf	led2_intensity, w
-	call	adc_pwm_calculate
-	call	pwm2_set
-
+;	movf	led1_intensity, w
+;	call	adc_pwm_calculate	;get the new pwm
+;	call	pwm1_set		;and set it
+;
+;	movf	led2_intensity, w
+;	call	adc_pwm_calculate
+;	call	pwm2_set
+;
 	call	pwm_update		;finally, apply the new values
 	return
 
@@ -129,7 +130,7 @@ adc_low
 	return
 ;-----------------------------
 ; calculate pwm value from intensity and current adc
-; intensity and result in W
+; value and store result in W
 ;
 ; pwm_duty = (adc_result+25)*intensity/4
 ;

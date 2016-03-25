@@ -1,7 +1,7 @@
 ;**********************************************************************
 ;Led headlamp
 ;PIC 16F616
-;internal 4MHz
+;internal 8MHz
 ;------------------------------
 ; Jakub Kaderka
 ; jakub.kaderka@gmail.com

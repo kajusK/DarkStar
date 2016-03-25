@@ -31,12 +31,12 @@ ADC_TRESHOLD	equ	158
 ;low voltage has to be measured more times before shutting the device off
 ADC_LOW_RETRIES	equ	3
 
-;timing of system tasks - increments of 1024 us
-ADC_PERIOD	equ	200		;5 Hz
-KEY_PERIOD	equ	10		;every 10ms
+;timing of system tasks - increments of 512 us
+ADC_PERIOD	equ	250		;8 Hz
+KEY_PERIOD	equ	20		;every 10ms
 
 ;min time of long press (in KEY_PERIOD increments)
-KEY_LONG	equ	100
+KEY_LONG	equ	80
 ;min time of key press (to avoid multiple short press events in case of key bouncing)
 KEY_MIN		equ	3
 
@@ -93,7 +93,7 @@ bt2_completed	equ	7
 ;*****
 	tmp
 
-;system timer, increments every 1024 us
+;system timer, increments every 512 us
 	adc_period_timer
 	key_period_timer
 ;tasks run etc flags

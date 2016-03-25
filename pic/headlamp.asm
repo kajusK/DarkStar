@@ -1,7 +1,7 @@
 ;**********************************************************************
 ;Led headlamp
 ;PIC 16F616
-;internal 4MHz
+;internal 8MHz
 ;------------------------------
 ; Jakub Kaderka
 ; jakub.kaderka@gmail.com
@@ -31,7 +31,7 @@
 	include p16f616.inc
 	errorlevel -302
 
-	__CONFIG _CP_OFF & _BOREN_ON & _MCLRE_OFF & _PWRTE_ON & _WDT_OFF & _INTRC_OSC_NOCLKOUT & _IOSCFS_4MHZ
+	__CONFIG _CP_OFF & _BOREN_ON & _MCLRE_OFF & _PWRTE_ON & _WDT_OFF & _INTRC_OSC_NOCLKOUT & _IOSCFS_8MHZ
 
 	include headlamp.inc
 
@@ -113,7 +113,7 @@ int_systime_key_wait
 	goto	int_pwm
 
 ;-----------------------------
-; Double channel 1024Hz pwm, uses up to 50% of system time
+; Double channel 2048Hz pwm, uses up to 50% of system time
 ;
 ; Generates shorter part of the pulse:
 ;	duty <= 50% : generate high part of pulse
@@ -196,7 +196,7 @@ init
 	movwf	ansel		;only RC3 and comparators out are analog inputs
 ;----------------AD--------------------
 	movlw	b'01010000'
-	movwf	adcon1		;set ADC period
+	movwf	adcon1		;set ADC period - 2us
 ;bank0
 	bcf	status, rp0
 	movlw	b'00011101'	;left justified, vdd reference,AD module on

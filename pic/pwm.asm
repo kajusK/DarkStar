@@ -1,7 +1,7 @@
 ;**********************************************************************
 ;Led headlamp
 ;PIC 16F616
-;internal 4MHz
+;internal 8MHz
 ;------------------------------
 ; Jakub Kaderka
 ; jakub.kaderka@gmail.com
@@ -9,7 +9,7 @@
 ;------------------------------
 ; pwm.asm
 ;------------------------------
-; Pwm generator uses tmr0 interrupt which sets the pwm frequency (1024Hz),
+; Pwm generator uses tmr0 interrupt which sets the pwm frequency (2048Hz),
 ; After the timer overflow, pwm outputs are driven to high or low, based
 ; on the pwm duties:
 ;	duty <= 50% : set pin to high
