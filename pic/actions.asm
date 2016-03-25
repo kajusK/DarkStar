@@ -124,9 +124,13 @@ power_off_sleep
 	bcf	pwm1
 	bsf	ledv		;turn status led off
 
+	bcf	adcon0, adon	;turn off adc module
+
 	sleep			;sleep my beauty, you are not needed for now...
 
 ;after wake up, turn led on and check voltage and power button pressed time
+	bsf	adcon0, adon	;turn on adc module
+
 	bsf	pwm1
 	bcf	ledv		;turn status led on
 
