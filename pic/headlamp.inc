@@ -21,12 +21,15 @@ PWM_DUTY_FULL	equ	PWM_DUTY_HALF*2
 LED_MODE_MAX	equ	5
 
 ;ADC
-; When this threshold is exceeded, the devices moves to sleep as
+; When LOW treshold is exceeded, device turns off second led and kees first on
+; lowest level
+; When the OFF threshold is exceeded, the devices moves to sleep as
 ; the battery is almost dead
 ;MODIFY - BASED ON PARTS YOU USED
 ; treshold_adc = 255*sense_diode_fwd/(treshold_voltage - supply_diode_fwd)
-; = 255*1,71/(3-0,23) - using the measured values
-ADC_TRESHOLD	equ	158
+; or simply measure cut off voltage, modify value and repeat until correct
+ADC_OFF_TRESHOLD	equ	160	;should be between 2.6-2.8V
+ADC_LOW_TRESHOLD	equ	150	;Around 3V
 
 ;low voltage has to be measured more times before shutting the device off
 ADC_LOW_RETRIES	equ	3
@@ -129,6 +132,7 @@ bt2_completed	equ	7
 	adc_result
 ;adc conversions left before shutdown of low voltage
 	adc_low_count
+	adc_off_count
 ;multiplication, division...
 	numberl
 	numberh

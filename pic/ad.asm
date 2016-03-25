@@ -84,7 +84,7 @@ adc_convert_1
 ;------------------------------
 adc_voltage_check
 	call	adc_convert		;result in W
-	sublw	ADC_TRESHOLD		;treshold - adc_result
+	sublw	ADC_OFF_TRESHOLD	;treshold - adc_result
 	return
 
 ;------------------------------
@@ -97,12 +97,21 @@ adc_voltage_check
 ;------------------------------
 adc_task
 	call	adc_convert		;result in W
-	sublw	ADC_TRESHOLD		;treshold - adc_result
+
+	movwf	tmp
+	sublw	ADC_OFF_TRESHOLD	;treshold - adc_result
 	btfss	status, c
-	goto	adc_low			;voltage low
+	goto	adc_below_off		;voltage too low
+
+adc_task_check
+	movf	tmp, w
+	sublw	ADC_LOW_TRESHOLD
+	btfss	status, c
+	goto	adc_below_low		;voltage low, reduce out power
 
 	movlw	ADC_LOW_RETRIES
 	movwf	adc_low_count		;reset adc low counter
+	movwf	adc_off_count
 
 ;apply pwm output correction
 adc_task_update
@@ -114,17 +123,25 @@ adc_task_update
 ;	call	adc_pwm_calculate
 ;	call	pwm2_set
 ;
-	call	pwm_update		;finally, apply the new values
+;	call	pwm_update		;finally, apply the new values
 	return
 
 ;voltage below treshold
-adc_low
-	decfsz	adc_low_count, f	;low voltage event must repeat few times before shutdown
-	goto	adc_task_update		;not enough repeated low voltage measurements, continue
+adc_below_off
+	decfsz	adc_off_count, f	;low voltage event must repeat few times before shutdown
+	goto	adc_task_check		;not enough repeated low voltage measurements, continue
 	;ugh, battery is low, shutdown
 
 	movlw	ADC_LOW_RETRIES
-	movwf	adc_low_count		;reset adc low counter
+	movwf	adc_off_count		;reset adc off counter
+
+	call	turnoff_voltage
+	return
+
+adc_below_low
+	decfsz	adc_low_count, f	;low voltage event must repeat few times before any action
+	goto	adc_task_update		;not enough repeated low voltage measurements, continue
+	;ugh, battery is low, reduce power
 
 	call	low_voltage
 	return

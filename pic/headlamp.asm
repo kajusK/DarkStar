@@ -242,6 +242,8 @@ init
 
 	movlw	ADC_LOW_RETRIES
 	movwf	adc_low_count
+	movlw	ADC_LOW_RETRIES
+	movwf	adc_off_count
 
 	movlw	ADC_PERIOD
 	movwf	adc_period_timer

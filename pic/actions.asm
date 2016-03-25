@@ -83,9 +83,24 @@ mode_switch_end
 ;
 ; Currently just redirects to power_off routine
 ;-----------------------------------
-low_voltage
+turnoff_voltage
 	goto	power_off
 
+;-----------------------------------
+; Battery voltage is low, limit output to minimal
+;-----------------------------------
+low_voltage
+	movlw	1
+	call	led1_set
+
+	btfss	mode, led_sel
+	return				;led2 is off, nothing to do
+
+	;led2 is on, change mode and turn it off
+	bcf	mode, led_sel
+	led_off	led2
+
+	return
 ;-----------------------------------
 ; Turn leds off - long press occured
 ;
