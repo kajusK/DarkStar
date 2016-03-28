@@ -37,7 +37,8 @@ ADC_LOW_TRESHOLD	equ	150	;Around 3V
 ADC_LOW_RETRIES	equ	3
 
 ;timing of system tasks - increments of 512 us
-ADC_PERIOD	equ	250		;8 Hz
+ADC_PERIOD	equ	195		;every 100ms
+ADC_TASK_PERIOD	equ	10		;real ADC timing - every second
 KEY_PERIOD	equ	20		;every 10ms
 
 ;min time of long press (in KEY_PERIOD increments)
@@ -138,6 +139,8 @@ bt2_completed	equ	7
 ;multiplication, division...
 	numberl
 	numberh
+;timing of AD task - to get longer period
+	adc_task_timer
 ;*****
 ;buttons
 ;*****

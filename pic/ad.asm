@@ -91,6 +91,11 @@ adc_voltage_check
 ; 2 stack levels and tmp
 ;------------------------------
 adc_task
+	decfsz	adc_task_timer, f
+	return				;delay to get longer AD task period - reduce blinking
+	movlw	ADC_TASK_PERIOD
+	movwf	adc_task_timer
+
 	call	adc_convert		;result in W
 
 	movwf	tmp
