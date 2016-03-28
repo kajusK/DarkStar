@@ -25,12 +25,7 @@
 ; Pwm = U / Ucc = U*ADRESH / (255*diode_fwd) * 100
 ;
 ; For selected values of components, the ADRESH can be between 158 (3V) and
-; around 100 (5V). To simplify calculations of pwm duty, the following equation
-; was designed, all constants were choosen experimentally for intesity in <0,5>
-; and pwm in <0,255>
-;
-; pwm_duty = (ADRESH+25)*intensity/4
-;
+; around 100 (5V).
 ;**********************************************************************
 
 ;------------------------------
@@ -113,7 +108,7 @@ adc_task_check
 	movwf	adc_low_count		;reset adc low counter
 	movwf	adc_off_count
 
-;apply pwm output correction
+;TODO: apply pwm output correction
 adc_task_update
 ;	movf	led1_intensity, w
 ;	call	adc_pwm_calculate	;get the new pwm
@@ -146,27 +141,34 @@ adc_below_low
 	call	low_voltage
 	return
 ;-----------------------------
-; calculate pwm value from intensity and current adc
-; value and store result in W
+; calculate pwm value from intensity (W) and store result in W
+; TODO add brightness compensation during voltage drop
 ;
-; pwm_duty = (adc_result+25)*intensity/4
+; pwm_duty = intensity^2 * PWM_LED_STEP
+; Intensity 1 has hardcoded value to PWM_LEVEL1_VAL
 ;
 ; uses tmp and 1 level stack
 ;-----------------------------
 adc_pwm_calculate
-	movwf	numberl			;intensity to multiply with
-	movf	adc_result, w
-	addlw	25			;adc+25
-	btfsc	status, c
-	movlw	0xFC			;error, should not overflow, set to something below 255
-	call	multiply		;(adc+25)*intensity
-	movlw	2
-	call	divide			;divide result by 2^2 = 4
+	movwf	tmp
+	sublw	1
+	btfsc	status, z
+	retlw	PWM_LEVEL1_VAL		;brightness 1 has hardcoded value
+
+	movf	tmp, w
+	movwf	numberl
+	call	multiply		;intensity^2
 
 	movf	numberh, f
-	movlw	0xff
 	btfss	status, z
-	movwf	numberl			;result was bigger than 255 - set to 100% duty
+	retlw	0xff			;result > 255, shouldn't happen, return full anyway
+
+	movlw	PWM_LED_STEP
+	call	multiply		;*PWM_LED_STEP
+
+	movf	numberh, f
+	btfss	status, z
+	retlw	0xff			;result > 255, shouldn't happen, return full anyway
 
 	movf	numberl, w
 	return
