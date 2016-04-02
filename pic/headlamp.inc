@@ -20,7 +20,8 @@ PWM_DUTY_FULL	equ	PWM_DUTY_HALF*2
 ;led modes
 LED_MODE_MAX	equ	5
 PWM_LEVEL1_VAL	equ	1
-PWM_LED_STEP	equ	255/(LED_MODE_MAX*LED_MODE_MAX)
+PWM_LEVEL_MAX	equ	200
+PWM_LED_STEP	equ	PWM_LEVEL_MAX/(LED_MODE_MAX*LED_MODE_MAX)
 
 ;ADC
 ; When LOW treshold is exceeded, device turns off second led and kees first on

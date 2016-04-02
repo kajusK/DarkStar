@@ -166,14 +166,19 @@ adc_pwm_calculate
 
 	movf	numberh, f
 	btfss	status, z
-	retlw	0xff			;result > 255, shouldn't happen, return full anyway
+	retlw	PWM_LEVEL_MAX		;result > 255, shouldn't happen, return full anyway
 
 	movlw	PWM_LED_STEP
 	call	multiply		;*PWM_LED_STEP
 
 	movf	numberh, f
 	btfss	status, z
-	retlw	0xff			;result > 255, shouldn't happen, return full anyway
+	retlw	PWM_LEVEL_MAX		;result > 255, shouldn't happen, return full anyway
+
+	movf	numberl, w
+	sublw	PWM_LEVEL_MAX
+	btfss	status, c
+	retlw	PWM_LEVEL_MAX		;result > MAX, return MAX
 
 	movf	numberl, w
 	return
