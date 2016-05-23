@@ -5,7 +5,7 @@ Small, lightweight and waterproof LED headlamp with two Cree XP-G2 leds. Can be
 used in biking, caving, mine exploration, hiking... But **always** carry a
 **backup** light source.
 
-![Top side](./images/top.jpg)
+![Top side](./images/box.jpg)
 
 Features
 --------
@@ -17,10 +17,11 @@ Features
 * Controlled by PIC 16F616 MCU (source code included)
 * Low power off current (3,2 uA), no need to unplug battery during power off state
 * Low power mode when battery is almost dead (single LED on lowest power)
-* Waterproof aluminium body
 * 3D printed battery box (hopefully waterproof) for two 18650 Li-Ion cells
 * Whole headlamp including batteries weights only TODO grams
+* Waterproof aluminium body
 
+![Top side](./images/waterproof.jpg)
 
 Controls
 --------
@@ -31,8 +32,6 @@ Controls
 * When the second LED is on, use up/down buttons to control its intensity
 * Press and hold up button for about 2 seconds to turn the lamp off
 
-![Body](./images/body.jpg)
-
 
 Warning
 -------
@@ -42,6 +41,8 @@ rely on it as a single source of light.
 
 The headlamp body can get quite hot if both LEDs are running on full power,
 there's no thermal protection, you have been warned.
+
+![Body](./images/battery.jpg)
 
 License
 -------
@@ -81,6 +82,8 @@ needs, for the narrow beam LED you can buy any compatible lens (it will require
 some modifications due to limited space on PCB though). I used [17mm 10deg lens]
 (http://www.aliexpress.com/item/Free-shipping-cree-xp-g-lens-Diameter-17mm-Smooth-surface-with-stand-Condenser-lenses-10-deg/777222733.html)
 
+![Body](./images/bare.jpg)
+
 Body
 ----
 The body is made from a piece of aluminium *6082 T6* using a small lathe. The top
@@ -92,4 +95,4 @@ be made from plastic (e.g. on 3D printer).
 The battery box is printed on 3D printer from ABS (I would rather use aluminium,
 but I don't have access to milling machine).
 
-![Headlamp body](./images/dimensions.jpg)
+![Headlamp body](./images/body.jpg)
