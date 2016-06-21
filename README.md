@@ -10,16 +10,16 @@ used in biking, caving, mine exploration, hiking... But **always** carry a
 Features
 --------
 * Two 5W Cree XP-G LEDs with independently controlled brightness
-* Up to 916lm (when using cool white Cree LEDs), by default cropped to about 600lm to reduce heat generation
+* Real Lab-measured output is 200lm (ebay value would be 916lm on 5W, limited by hw to about 3W), see [Measurement](./Measurement.md) for more details
 * Always on LED with wide (115 degrees) beam to illuminate surroundings
 * One narrow beam (10 degrees) LED to illuminate long tunnels, big caves, etc.
 * Small red status LED, can be replaced with UV or used as emergency light when the battery is almost dead (required swapping one resistor and modifying firmware)
 * Controlled by PIC 16F616 MCU (source code included)
 * Low power off current (3,2 uA), no need to unplug battery during power off state
 * Low power mode when battery is almost dead (single LED on lowest power)
-* 3D printed battery box (hopefully waterproof) for two 18650 Li-Ion cells
-* Whole headlamp including batteries weights only TODO grams
 * Waterproof aluminium body
+* 3D printed battery box (waterproof) for two 18650 Li-Ion cells
+* Whole headlamp (including two 18650 batteries) weights only 220 grams
 
 ![Top side](./images/waterproof.jpg)
 
@@ -89,10 +89,12 @@ Body
 The body is made from a piece of aluminium *6082 T6* using a small lathe. The top
 cover is made from plexiglass taken from old diving goggles. Waterproofness is
 ensured by big O-ring between body and glass and two small O-rings on the
-control knob. The body works also as a heat sink for LEDs, therefore it can't
+control knob. The body works also as a heat sink for LEDs, therefore it cannot
 be made from plastic (e.g. on 3D printer).
 
 The battery box is printed on 3D printer from ABS (I would rather use aluminium,
 but I don't have access to milling machine).
+
+See [Bill of Materials](./BOM.md).
 
 ![Headlamp body](./images/body.jpg)
