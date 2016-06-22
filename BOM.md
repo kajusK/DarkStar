@@ -15,3 +15,4 @@ Mechanical only, for electronics see [BOM.csv](./pcb/BOM.csv).
 | Nut M6				| 1	|
 | Brass knurled nut M3			| 1	|
 | Some ABS to print battery box		| 1	|
+| 17mm condenser lens 10 deg for XP-G2	| 1	|
