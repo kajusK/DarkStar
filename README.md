@@ -9,19 +9,26 @@ used in biking, caving, mine exploration, hiking... But **always** carry a
 
 Features
 --------
-* Two 5W Cree XP-G LEDs with independently controlled brightness
-* Real Lab-measured output is 200lm (ebay value would be 916lm on 5W, limited by hw to about 3W), see [Measurement](./Measurement.md) for more details
+* Waterproof aluminium lamp body
+* Lightweight - whole headlamp, including two 18650 batteries, weights 220 grams
+* Two 5W Cree XP-G2 LEDs with independently controlled brightness
 * Always on LED with wide (115 degrees) beam to illuminate surroundings
 * One narrow beam (10 degrees) LED to illuminate long tunnels, big caves, etc.
-* Small red status LED, can be replaced with UV or used as emergency light when the battery is almost dead (required swapping one resistor and modifying firmware)
+* Real Lab-measured light output is over 200lm (ebay value, based only on LED datasheet, would be over 600lm), see [Measurement](./Measurement.md) for more details
+* Small red status LED (can be replaced by UV LED, etc.)
 * Controlled by PIC 16F616 MCU (source code included)
 * Low power off current (3,2 uA), no need to unplug battery during power off state
-* Low power mode when battery is almost dead (single LED on lowest power)
-* Waterproof aluminium body
-* 3D printed battery box (waterproof) for two 18650 Li-Ion cells
-* Whole headlamp (including two 18650 batteries) weights only 220 grams
+* Low power mode when battery is almost dead (single LED on lowest power, ~40mA)
+* Long run time (up to 110 hours on lowest power (~40mA), over 24 hours on reasonable walking power (~150mA))
+* 3D printed waterproof battery box for two 18650 Li-Ion cells
 
 ![Top side](./images/waterproof.jpg)
+
+Weight
+------
+* Lamp head: 80g
+* Battery box: 45g
+* 2x18650 battery pack: 96g
 
 Controls
 --------
@@ -32,7 +39,6 @@ Controls
 * When the second LED is on, use up/down buttons to control its intensity
 * Press and hold up button for about 2 seconds to turn the lamp off
 
-
 Warning
 -------
 Li-Ion cells can catch fire or explode if not handled properly. The hardware
@@ -40,7 +46,7 @@ design was NOT extensively tested, the headlamp could die any time, don't
 rely on it as a single source of light.
 
 The headlamp body can get quite hot if both LEDs are running on full power,
-there's no thermal protection, you have been warned.
+there's no thermal protection, **you have been warned**.
 
 ![Body](./images/battery.jpg)
 
@@ -55,7 +61,7 @@ Directories
 -----------
 * **cad** headlamp body and battery box design (FreeCad)
 * **pcb** contains all kicad files including BillOfMaterials for electronics,
-	please note plated vias under Cree LEDs are required to move heat from
+	please note plated vias under Cree LEDs are mandatory to move heat from
 	LED to heatsink (body). Gerber files for manufacturing are included.
 * **pic** contains assembly source code for the headlamp MCU
 
