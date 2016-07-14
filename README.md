@@ -39,6 +39,8 @@ Controls
 * When the second LED is on, use up/down buttons to control its intensity
 * Press and hold up button for about 2 seconds to turn the lamp off
 
+![Helmet](./images/helmet.jpg)
+
 Warning
 -------
 Li-Ion cells can catch fire or explode if not handled properly. The hardware
