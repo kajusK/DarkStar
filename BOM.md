@@ -18,6 +18,6 @@ Mechanical only, for electronics see [BOM.csv](./pcb/BOM.csv).
 | Brass knurled nut M3			| 1	|
 | O-ring 34x1,5				| 1	|
 | O-ring 3x1				| 2	|
-| O-ring 113x1,5			| 1	|
+| O-ring 36x1,5				| 1	|
 | Some ABS to print battery box		| 1	|
 | 17mm condenser lens 10 deg for XP-G2	| 1	|
