@@ -1,3 +1,10 @@
+New version!
+============
+
+There's a whole new version with mutch more features and power:
+https://github.com/kajusK/Darkstar-Mk.II/
+
+
 DarkStar headlamp
 =================
 
